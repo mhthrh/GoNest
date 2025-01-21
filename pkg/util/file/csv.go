@@ -2,9 +2,9 @@ package csvFile
 
 import (
 	"bytes"
-	"common-lib/pkg/util/directory"
 	"encoding/csv"
 	"errors"
+	"github.com/mhthrh/common-lib/pkg/util/directory"
 	"os"
 	"path/filepath"
 )

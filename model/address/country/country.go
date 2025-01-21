@@ -1,9 +1,4 @@
-package address
-
-const (
-	path = "/file/countries"
-	name = "Countries.csv"
-)
+package country
 
 type Country struct {
 	ID   string `json:"id"`
