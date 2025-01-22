@@ -7,6 +7,7 @@ import (
 
 const (
 	appMainDir = "common-lib"
+	appRootDir = "A3PATH"
 )
 
 var (
@@ -27,4 +28,11 @@ func GetWorkingDir() (path string, e error) {
 	}
 	return appPath, nil
 
+}
+func GetAppRootDir() string {
+	path := os.Getenv(appRootDir)
+	if path == "" {
+		path = os.Getenv("GOHOME")
+	}
+	return path
 }

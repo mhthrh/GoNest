@@ -24,10 +24,8 @@ func NewFile(path, name string, data []byte) *File {
 }
 
 func (f *File) Read() error {
-	appPath, e := directory.GetWorkingDir()
-	if e != nil {
-		return e
-	}
+	appPath := directory.GetAppRootDir()
+
 	var buf bytes.Buffer
 	file, e := os.Open(filepath.Join(appPath, f.Path, f.Name))
 	if e != nil {
