@@ -1,12 +1,13 @@
-package errors
+package address
 
 import (
 	"fmt"
+	"github.com/mhthrh/common-lib/errors"
 	"time"
 )
 
-func StreetNotFound(e error) *XError {
-	return &XError{
+func StreetNotFound(e error) *errors.XError {
+	return &errors.XError{
 		Code:          "ADR100100",
 		Type:          "Address Error",
 		Message:       "street name cannot be empty",
@@ -15,8 +16,8 @@ func StreetNotFound(e error) *XError {
 		Time:          time.Now().String(),
 	}
 }
-func PostalCodeNotFound(e error) *XError {
-	return &XError{
+func PostalCodeNotFound(e error) *errors.XError {
+	return &errors.XError{
 		Code:          "ADR100101",
 		Type:          "Address Error",
 		Message:       "postal code cannot be empty",
@@ -25,8 +26,8 @@ func PostalCodeNotFound(e error) *XError {
 		Time:          time.Now().String(),
 	}
 }
-func StateNotFound(e error) *XError {
-	return &XError{
+func StateNotFound(e error) *errors.XError {
+	return &errors.XError{
 		Code:          "ADR100102",
 		Type:          "Address Error",
 		Message:       "state name cannot be empty",
@@ -35,8 +36,8 @@ func StateNotFound(e error) *XError {
 		Time:          time.Now().String(),
 	}
 }
-func CityNotFound(e error) *XError {
-	return &XError{
+func CityNotFound(e error) *errors.XError {
+	return &errors.XError{
 		Code:          "ADR100103",
 		Type:          "Address Error",
 		Message:       "city name cannot be empty",
@@ -45,12 +46,12 @@ func CityNotFound(e error) *XError {
 		Time:          time.Now().String(),
 	}
 }
-func CountryNotFound(e error) *XError {
-	return &XError{
+func CountryNotFound(e error) *errors.XError {
+	return &errors.XError{
 		Code:          "ADR100104",
 		Type:          "Address Error",
-		Message:       "country code cannot be empty",
-		Details:       "country code cannot be empty",
+		Message:       "address code cannot be empty",
+		Details:       "address code cannot be empty",
 		InternalError: fmt.Sprintf("internal error: %v", e),
 		Time:          time.Now().String(),
 	}

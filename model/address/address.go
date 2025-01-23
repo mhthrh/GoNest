@@ -10,5 +10,5 @@ type Address struct {
 	City       city.City       `json:"city"`
 	State      string          `json:"state"`
 	PostalCode string          `json:"postalCode"`
-	Country    country.Country `json:"country"`
+	Country    country.Country `json:"address"`
 }
