@@ -1,5 +1,11 @@
 package errors
 
+import (
+	"fmt"
+	"runtime"
+	"time"
+)
+
 type XError struct {
 	Code          string  `json:"code"`
 	Type          string  `json:"type"`
@@ -9,6 +15,15 @@ type XError struct {
 	Time          string  `json:"time"`
 }
 
-func ConverError(err error) *XError {
-	return &XError{}
+func RunTimeError(err error) *XError {
+	_, file, line, _ := runtime.Caller(1)
+
+	return &XError{
+		Code:          "runtime",
+		Type:          "runtime",
+		Message:       err.Error(),
+		Details:       fmt.Sprintf("file name: %s, line number: %d", file, line),
+		InternalError: nil,
+		Time:          time.Now().String(),
+	}
 }
