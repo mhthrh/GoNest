@@ -20,16 +20,16 @@ func PostalCodeNotFound() *XError {
 		Time:    time.Now().String(),
 	}
 }
-func StateNotFound() XError {
-	return XError{
+func StateNotFound() *XError {
+	return &XError{
 		Code:    "ADR100102",
 		Type:    "Address Error",
 		Message: "state name cannot be empty",
 		Details: "state name cannot be empty",
 	}
 }
-func CityNotFound() XError {
-	return XError{
+func CityNotFound() *XError {
+	return &XError{
 		Code:    "ADR100103",
 		Type:    "Address Error",
 		Message: "city name cannot be empty",
@@ -37,8 +37,8 @@ func CityNotFound() XError {
 		Time:    time.Now().String(),
 	}
 }
-func CountryNotFound() XError {
-	return XError{
+func CountryNotFound() *XError {
+	return &XError{
 		Code:    "ADR100104",
 		Type:    "Address Error",
 		Message: "country code cannot be empty",
