@@ -12,11 +12,13 @@ func _() {
 	_ = x[Active-1]
 	_ = x[Inactive-2]
 	_ = x[Banned-3]
+	_ = x[Expired-4]
+	_ = x[Deceased-5]
 }
 
-const _Status_name = "UnknownActiveInactiveBanned"
+const _Status_name = "UnknownActiveInactiveBannedExpiredDeceased"
 
-var _Status_index = [...]uint8{0, 7, 13, 21, 27}
+var _Status_index = [...]uint8{0, 7, 13, 21, 27, 34, 42}
 
 func (i Status) String() string {
 	if i < 0 || i >= Status(len(_Status_index)-1) {

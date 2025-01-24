@@ -5,9 +5,10 @@ package customer
 type Status int
 
 const (
-	Unknown  Status = iota // Unknown status
-	Active                 // Active user
-	Inactive               // Inactive user
-	Banned                 // Banned user
+	Unknown Status = iota
+	Active
+	Inactive
+	Banned
+	Expired
+	Deceased
 )
-

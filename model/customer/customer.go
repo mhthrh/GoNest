@@ -2,20 +2,25 @@ package customer
 
 import (
 	"github.com/google/uuid"
+	"github.com/mhthrh/common-lib/model/address"
 	"time"
 )
 
 type Customer struct {
-	id        uuid.UUID
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Email     string `json:"email"`
-	Mobile    string `json:"mobile"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	createdAt time.Time
-	updatedAt time.Time
-	deletedAt time.Time
-	LastLogin time.Time `json:"lastLogin"`
-	Stat      Status    `json:"status"`
+	ID         uuid.UUID       `json:"id"`
+	CustomerID string          `json:"customerID"`
+	IdType     IdTypes         `json:"idType"`
+	Username   string          `json:"username"`
+	Password   string          `json:"password"`
+	Email      string          `json:"email"`
+	Mobile     string          `json:"mobile"`
+	Address    address.Address `json:"address"`
+	FirstName  string          `json:"firstName"`
+	MiddleName string          `json:"middleName"`
+	LastName   string          `json:"lastName"`
+	CreatedAt  time.Time       `json:"createdAt"`
+	UpdatedAt  time.Time       `json:"updatedAt"`
+	Stat       Status          `json:"status"`
+	Picture    string          `json:"picture"`
+	Document   string          `json:"document"`
 }
