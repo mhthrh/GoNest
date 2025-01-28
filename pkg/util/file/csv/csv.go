@@ -1,4 +1,4 @@
-package csvFile
+package csv
 
 import (
 	"bytes"
@@ -9,25 +9,29 @@ import (
 	"path/filepath"
 )
 
+var (
+	FilePath = ""
+	FileName = ""
+	appPath  = ""
+)
+
 type File struct {
-	Name string
-	Path string
 	Data []byte
 }
 
-func NewFile(path, name string, data []byte) *File {
+func init() {
+	appPath = directory.GetAppRootDir()
+}
+func New(data []byte) *File {
 	return &File{
-		Name: name,
-		Path: path,
 		Data: data,
 	}
 }
 
 func (f *File) Read() error {
-	appPath := directory.GetAppRootDir()
 
 	var buf bytes.Buffer
-	file, e := os.Open(filepath.Join(appPath, f.Path, f.Name))
+	file, e := os.Open(filepath.Join(appPath, FilePath, FileName))
 	if e != nil {
 		return e
 	}
