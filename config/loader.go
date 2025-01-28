@@ -2,7 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/mhthrh/common-lib/config/db"
+	"github.com/mhthrh/common-lib/config/model"
 	textFile "github.com/mhthrh/common-lib/pkg/util/file/text"
 )
 
@@ -15,21 +15,26 @@ type Config interface {
 	PrintConfig() error
 }
 type File struct {
-	DataBase db.DB
+	MetaData model.MetaData `json:"metaData"`
+	Secret   model.Secret   `json:"secret"`
+	DataBase model.DB       `json:"db"`
 }
 
 type Vault struct {
-	Database db.DB
+	MetaData model.MetaData `json:"metaData"`
+	Secret   model.Secret   `json:"secret"`
+	DataBase model.DB       `json:"db"`
 }
 
 func (f *File) Initialize() error {
+	var config File
 	textFile.FileName = ""
 	textFile.FilePath = ""
 	b := textFile.New(nil)
 	if err := b.Read(); err != nil {
 		return err
 	}
-	err := json.Unmarshal(b.Data, &f.DataBase)
+	err := json.Unmarshal(b.Data, &config)
 	if err != nil {
 		return err
 	}
