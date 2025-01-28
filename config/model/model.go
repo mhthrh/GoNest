@@ -8,11 +8,11 @@ type MetaData struct {
 }
 type Secret struct {
 	SecretKey     string `json:"secretKey"`
-	TokenDuration int    `json:"tokenDuration"`
+	TokenDuration string `json:"tokenDuration"`
 }
 type DB struct {
 	Host     string `json:"host"`
-	Port     string `json:"port"`
+	Port     int    `json:"port"`
 	UserName string `json:"user"`
 	Password string `json:"password"`
 	DbName   string `json:"dbName"`

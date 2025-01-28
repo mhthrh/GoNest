@@ -26,10 +26,14 @@ type Vault struct {
 	DataBase model.DB       `json:"db"`
 }
 
+func NewFile(name, path string) *File {
+	textFile.FileName = name
+	textFile.FilePath = path
+	return &File{}
+}
 func (f *File) Initialize() error {
 	var config File
-	textFile.FileName = ""
-	textFile.FilePath = ""
+
 	b := textFile.New(nil)
 	if err := b.Read(); err != nil {
 		return err
