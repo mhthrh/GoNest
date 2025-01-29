@@ -17,6 +17,4 @@ type DB struct {
 	Password string `json:"password"`
 	DbName   string `json:"dbName"`
 	Driver   string `json:"driver"`
-	MinCount int    `json:"minCount"`
-	MaxCount int    `json:"maxCount"`
 }
