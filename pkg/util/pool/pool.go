@@ -2,16 +2,21 @@ package pool
 
 import (
 	"github.com/google/uuid"
+	customModelError "github.com/mhthrh/common-lib/errors"
 )
 
 type IPool interface {
-	New(chan struct{}) chan Pool
-	Release(chan Pool)
+	Get() (*Connection, *customModelError.XError)
+	Put(key uuid.UUID) *customModelError.XError
+	Initialize()
+	Release(uuid.UUID) *customModelError.XError
+	ReleaseAll() *customModelError.XError
 }
 
-type Pool struct {
-	CId uuid.UUID
-	Typ CTypes
-	Cnn *interface{}
-	Err error
+type Connection struct {
+	CId   uuid.UUID
+	Typ   CTypes
+	Cnn   interface{}
+	InUse bool
+	Err   *error
 }

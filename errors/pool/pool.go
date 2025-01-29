@@ -1,0 +1,58 @@
+package pool
+
+import (
+	"github.com/mhthrh/common-lib/errors"
+	"time"
+)
+
+func DatabaseUnreachable(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100100",
+		Type:          "dataBase Error",
+		Message:       "Host is not reachable",
+		Details:       "host is not reachable",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
+func DbCnnNotExist(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100101",
+		Type:          "dataBase Error",
+		Message:       "connection not exist",
+		Details:       "connection not exist",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
+func DbConnectionFailed(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100102",
+		Type:          "dataBase Error",
+		Message:       "failed to connect to database",
+		Details:       "failed to connect to database",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
+func ConnectionInUse(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100103",
+		Type:          "dataBase Error",
+		Message:       "connection already in use",
+		Details:       "connection already in use",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
+
+func ReleaseAllError(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100104",
+		Type:          "dataBase Error",
+		Message:       "cannot release all connection in certain state",
+		Details:       "cannot release all connection in certain state",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
