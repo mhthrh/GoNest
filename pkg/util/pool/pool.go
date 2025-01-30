@@ -7,7 +7,7 @@ import (
 
 type IConnection interface {
 	Initialize()
-	Get() (*Connection, *customModelError.XError)
+	Get() *Connection
 	Put(key uuid.UUID) *customModelError.XError
 	Release(uuid.UUID) *customModelError.XError
 	ReleaseAll() *customModelError.XError

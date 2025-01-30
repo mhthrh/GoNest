@@ -38,12 +38,12 @@ func New(d model.DB, count int, refresh time.Duration) pool.IConnection {
 	}
 }
 
-func (p Config) Get() (*pool.Connection, *customModelError.XError) {
+func (p Config) Get() *pool.Connection {
 	for {
 		for _, d := range dic {
 			if !d.InUse {
 				d.InUse = true
-				return d, nil
+				return d
 			}
 		}
 	}

@@ -10,6 +10,12 @@ type FileConfig struct {
 	name string
 }
 
+func New(path string, name string) IConfig {
+	return &FileConfig{
+		path: path,
+		name: name,
+	}
+}
 func (f FileConfig) Initialize() (*Config, error) {
 	var config Config
 	textFile.FileName = f.name
