@@ -25,30 +25,20 @@ var (
 )
 
 type Config struct {
-	DB          model.DB
-	Count       int
-	RefreshTime time.Duration
+	db          model.DB
+	count       int
+	refreshTime time.Duration
 }
 
-func refresh(d time.Duration) {
-	for {
-		<-time.After(d)
-		for s, connection := range dic {
-			if connection == nil {
-				delete(dic, s)
-			}
-			if connection.Err != nil {
-				delete(dic, s)
-			}
-			if connection.Cnn.(*sql.DB).Ping() != nil {
-				connection = nil
-				delete(dic, s)
-			}
-		}
+func New(d model.DB, count int, refresh time.Duration) pool.IConnection {
+	return Config{
+		db:          d,
+		count:       count,
+		refreshTime: refresh,
 	}
 }
 
-func (p Config) Get() (*pool.Connection, error) {
+func (p Config) Get() (*pool.Connection, *customModelError.XError) {
 	for {
 		for _, d := range dic {
 			if !d.InUse {
@@ -69,15 +59,32 @@ func (p Config) Put(key uuid.UUID) *customModelError.XError {
 
 // Initialize must run with goroutine
 func (p Config) Initialize() {
-	go refresh(p.RefreshTime)
+	go func() {
+		for {
+			<-time.After(p.refreshTime)
+			for s, connection := range dic {
+				if connection == nil {
+					delete(dic, s)
+				}
+				if connection.Err != nil {
+					delete(dic, s)
+				}
+				if connection.Cnn.(*sql.DB).Ping() != nil {
+					connection = nil
+					delete(dic, s)
+				}
+			}
+		}
+	}()
+
 	for {
 		select {
 		case <-stop:
 			return
 		default:
-			if len(dic) < p.Count {
+			if len(dic) < p.count {
 				key := uuid.New()
-				cnn, err := sql.Open(p.DB.Driver, fmt.Sprintf(psql, p.DB.Host, p.DB.Port, p.DB.UserName, p.DB.Password, p.DB.DbName, p.DB.SSLMode))
+				cnn, err := sql.Open(p.db.Driver, fmt.Sprintf(psql, p.db.Host, p.db.Port, p.db.UserName, p.db.Password, p.db.DbName, p.db.SSLMode))
 				if err != nil {
 					log.Println(customeError.DbConnectionFailed(customModelError.RunTimeError(err)))
 				}
@@ -120,6 +127,7 @@ func (p Config) ReleaseAll() *customModelError.XError {
 				break
 			}
 		}
+		total = time.Duration(0)
 		_ = pol.Cnn.(*sql.DB).Close()
 		delete(dic, s)
 	}
