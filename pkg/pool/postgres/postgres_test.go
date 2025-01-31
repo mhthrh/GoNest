@@ -2,7 +2,8 @@ package postgres
 
 import (
 	l "github.com/mhthrh/common-lib/config/loader"
-	"github.com/mhthrh/common-lib/pkg/util/pool"
+	customModelError "github.com/mhthrh/common-lib/errors"
+	"github.com/mhthrh/common-lib/pkg/pool"
 	"testing"
 	"time"
 )
@@ -15,7 +16,7 @@ var (
 )
 
 func init() {
-	f = l.New("", "")
+	f = l.New("common-lib/config/file", "config-test.json")
 	c, e = f.Initialize()
 	if e != nil {
 		panic(e)
@@ -24,6 +25,13 @@ func init() {
 }
 
 func TestConnection(t *testing.T) {
-	post.Initialize()
+	err := make(chan customModelError.XError)
+	post.Initialize(err)
+	for {
+		select {
+		case ee := <-err:
+			t.Log(ee)
+		}
+	}
 	post.Get()
 }

@@ -16,9 +16,7 @@ type XError struct {
 }
 
 func RunTimeError(err error) *XError {
-	//
 	_, file, line, _ := runtime.Caller(1)
-
 	return &XError{
 		Code:          "runtime",
 		Type:          "runtime",

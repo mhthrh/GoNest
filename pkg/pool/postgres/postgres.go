@@ -7,8 +7,7 @@ import (
 	"github.com/mhthrh/common-lib/config/model"
 	customModelError "github.com/mhthrh/common-lib/errors"
 	customeError "github.com/mhthrh/common-lib/errors/pool"
-	"github.com/mhthrh/common-lib/pkg/util/pool"
-	"log"
+	"github.com/mhthrh/common-lib/pkg/pool"
 	"time"
 )
 
@@ -19,15 +18,19 @@ const (
 )
 
 var (
-	dic    = map[string]*pool.Connection{}
-	stop   = make(chan struct{}, 1)
-	newCnn = make(chan pool.Connection, 1)
+	dic  map[string]*pool.Connection
+	stop chan struct{}
 )
 
 type Config struct {
 	db          model.DB
 	count       int
 	refreshTime time.Duration
+}
+
+func init() {
+	dic = make(map[string]*pool.Connection)
+	stop = make(chan struct{}, 1)
 }
 
 func New(d model.DB, count int, refresh time.Duration) pool.IConnection {
@@ -58,7 +61,7 @@ func (p Config) Put(key uuid.UUID) *customModelError.XError {
 }
 
 // Initialize must run with goroutine
-func (p Config) Initialize() {
+func (p Config) Initialize(e chan customModelError.XError) {
 	go func() {
 		for {
 			<-time.After(p.refreshTime)
@@ -86,14 +89,15 @@ func (p Config) Initialize() {
 				key := uuid.New()
 				cnn, err := sql.Open(p.db.Driver, fmt.Sprintf(psql, p.db.Host, p.db.Port, p.db.UserName, p.db.Password, p.db.DbName, p.db.SSLMode))
 				if err != nil {
-					log.Println(customeError.DbConnectionFailed(customModelError.RunTimeError(err)))
+					e <- *customeError.DbConnectionFailed(customModelError.RunTimeError(err))
+					break
 				}
 				dic[key.String()] = &pool.Connection{
 					CId:   key,
 					Typ:   1,
 					Cnn:   cnn,
 					InUse: false,
-					Err:   nil,
+					Err:   &err,
 				}
 			}
 		}

@@ -6,7 +6,7 @@ import (
 )
 
 type IConnection interface {
-	Initialize()
+	Initialize(chan customModelError.XError)
 	Get() *Connection
 	Put(key uuid.UUID) *customModelError.XError
 	Release(uuid.UUID) *customModelError.XError

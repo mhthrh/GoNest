@@ -1,12 +1,11 @@
 package pool
 
-
 //go:generate stringer -type=CTypes
 
 type CTypes int
 
 const (
-	none  CTypes = iota
+	none CTypes = iota
 	postgres
 	oracle
 	msSql
@@ -15,7 +14,4 @@ const (
 	kafka
 	ibmMq
 	rabbit
-
 )
-
-
