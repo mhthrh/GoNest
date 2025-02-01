@@ -6,8 +6,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/mhthrh/common-lib/config/model"
 	customModelError "github.com/mhthrh/common-lib/errors"
-	customeError "github.com/mhthrh/common-lib/errors/pool"
+	customError "github.com/mhthrh/common-lib/errors/pool"
 	"github.com/mhthrh/common-lib/pkg/pool"
+	"github.com/samber/lo"
+	"strings"
 	"time"
 )
 
@@ -18,122 +20,101 @@ const (
 )
 
 var (
-	dic  map[string]*pool.Connection
-	stop chan struct{}
+	connections map[string]pool.Connection
+	stop        chan struct{}
 )
 
 type Config struct {
-	db          model.DB
-	count       int
-	refreshTime time.Duration
+	db model.DB
 }
 
 func init() {
-	dic = make(map[string]*pool.Connection)
-	stop = make(chan struct{}, 1)
+	connections = make(map[string]pool.Connection)
+
 }
 
-func New(d model.DB, count int, refresh time.Duration) pool.IConnection {
-	return Config{
-		db:          d,
-		count:       count,
-		refreshTime: refresh,
+func New(db model.DB) (pool.IConnection, *customModelError.XError) {
+	if strings.Trim(db.Host, " ") == "" {
+		return nil, customError.InputParamsMismatch(nil)
 	}
+	return Config{db: db}, nil
 }
 
-func (p Config) Get() *pool.Connection {
-	for {
-		for _, d := range dic {
-			if !d.InUse {
-				d.InUse = true
-				return d
-			}
-		}
-	}
-}
-
-func (p Config) Put(key uuid.UUID) *customModelError.XError {
-	if dic[key.String()] == nil {
-		return customeError.DbCnnNotExist(nil)
-	}
-	dic[key.String()].InUse = false
-	return nil
-}
-
-// Initialize must run with goroutine
-func (p Config) Initialize(e chan customModelError.XError) {
-	go func() {
-		for {
-			<-time.After(p.refreshTime)
-			for s, connection := range dic {
-				if connection == nil {
-					delete(dic, s)
-				}
-				if connection.Err != nil {
-					delete(dic, s)
-				}
-				if connection.Cnn.(*sql.DB).Ping() != nil {
-					connection = nil
-					delete(dic, s)
-				}
-			}
-		}
-	}()
-
+func (c Config) Maker(request chan pool.Request) (response chan pool.Response) {
 	for {
 		select {
-		case <-stop:
-			return
-		default:
-			if len(dic) < p.count {
-				key := uuid.New()
-				cnn, err := sql.Open(p.db.Driver, fmt.Sprintf(psql, p.db.Host, p.db.Port, p.db.UserName, p.db.Password, p.db.DbName, p.db.SSLMode))
-				if err != nil {
-					e <- *customeError.DbConnectionFailed(customModelError.RunTimeError(err))
-					break
-				}
-				dic[key.String()] = &pool.Connection{
-					CId:   key,
-					Typ:   1,
-					Cnn:   cnn,
-					InUse: false,
-					Err:   &err,
-				}
-			}
-		}
-	}
-}
-
-func (p Config) Release(uuid uuid.UUID) *customModelError.XError {
-	pol := dic[uuid.String()]
-	if pol == nil {
-		return customeError.DbCnnNotExist(nil)
-	}
-	if pol.InUse {
-		return customeError.DbCnnNotExist(nil)
-	}
-	_ = pol.Cnn.(*sql.DB).Close()
-	delete(dic, uuid.String())
-	return nil
-}
-
-func (p Config) ReleaseAll() *customModelError.XError {
-	stop <- struct{}{}
-	for s, pol := range dic {
-		var total time.Duration
-		if pol.InUse {
-			for {
-				<-time.After(checkCnnStatusDuration)
-				total += checkCnnStatusDuration
-				if total.Seconds() > totalWaitForReleaseAll.Seconds() {
-					return customeError.ReleaseAllError(nil)
+		case r := <-request:
+			switch {
+			case r.Count == 0:
+				response <- pool.Response{
+					Total: uint(len(connections)),
+					InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
+						return value.InUse == true
+					}))),
+					Error: nil,
 				}
 				break
+			case r.Count > 0:
+				if len(connections) >= int(r.Count) {
+					response <- pool.Response{
+						Total: r.Count,
+						InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
+							return value.InUse == true
+						}))),
+						Error: customError.MaximumConnection(nil),
+					}
+					break
+				}
+				s := true
+				for range int(r.Count) - len(connections) {
+					cnn, err := sql.Open(c.db.Driver, fmt.Sprintf(psql, c.db.Host, c.db.Port, c.db.UserName, c.db.Password, c.db.DbName, c.db.SSLMode))
+					if err != nil {
+						response <- pool.Response{
+							Total: uint(len(connections)),
+							InUse: uint(0),
+							Error: customError.DbConnectionFailed(customModelError.RunTimeError(err)),
+						}
+						s = false
+						break
+					}
+					key := uuid.New()
+					connections[key.String()] = pool.Connection{
+						Id:    key,
+						Cnn:   cnn,
+						InUse: false,
+					}
+				}
+				if s {
+					response <- pool.Response{
+						Total: uint(len(connections)),
+						InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
+							return value.InUse == true
+						}))),
+						Error: nil,
+					}
+					break
+				}
 			}
 		}
-		total = time.Duration(0)
-		_ = pol.Cnn.(*sql.DB).Close()
-		delete(dic, s)
 	}
-	return nil
+}
+
+func (c Config) Manager(connections chan pool.Connection) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c Config) Refresh(c2 chan struct{}) chan pool.Response {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c Config) Release(uuids chan uuid.UUID) chan pool.Response {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c Config) ReleaseAll() *customModelError.XError {
+	//TODO implement me
+	panic("implement me")
 }

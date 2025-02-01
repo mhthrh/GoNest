@@ -2,6 +2,7 @@ package loader
 
 import (
 	"github.com/mhthrh/common-lib/config/model"
+	customModelError "github.com/mhthrh/common-lib/errors"
 )
 
 type Config struct {
@@ -11,6 +12,6 @@ type Config struct {
 }
 
 type IConfig interface {
-	Initialize() (*Config, error)
-	PrintConfig() error
+	Initialize() (*Config, *customModelError.XError)
+	PrintConfig() *customModelError.XError
 }

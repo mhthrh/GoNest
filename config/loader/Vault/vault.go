@@ -1,9 +1,11 @@
-package loader
+package Vault
+
+import "github.com/mhthrh/common-lib/config/loader"
 
 type VaultConfig struct {
 }
 
-func (v VaultConfig) Initialize() (*Config, error) {
+func (v VaultConfig) Initialize() (*loader.Config, error) {
 	//TODO implement me
 	panic("implement me")
 }

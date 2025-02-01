@@ -1,6 +1,7 @@
 package loader
 
 import (
+	"github.com/mhthrh/common-lib/config/loader/file"
 	"github.com/mhthrh/common-lib/model/test"
 	"reflect"
 	"testing"
@@ -10,7 +11,7 @@ func TestFileConfig_Initialize(t *testing.T) {
 	tests := []test.Test{
 		{
 			Name: "Test-1",
-			Input: FileConfig{
+			Input: file.FileConfig{
 				path: "",
 				name: "",
 			},
@@ -21,9 +22,9 @@ func TestFileConfig_Initialize(t *testing.T) {
 	}
 	for _, tt := range tests {
 
-		f := FileConfig{
-			path: tt.Input.(FileConfig).path,
-			name: tt.Input.(FileConfig).name,
+		f := file.FileConfig{
+			path: tt.Input.(file.FileConfig).path,
+			name: tt.Input.(file.FileConfig).name,
 		}
 		got, err := f.Initialize()
 		if (err != nil) != tt.HasError {

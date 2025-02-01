@@ -56,3 +56,33 @@ func ReleaseAllError(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
+func InputParamsMismatch(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100105",
+		Type:          "Pool Error",
+		Message:       "input params mismatch",
+		Details:       "input params mismatch, check new method parameter(S)",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
+func InputParamsTypeMismatch(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100106",
+		Type:          "Pool Error",
+		Message:       "input params type mismatch",
+		Details:       "type mismatch, check new method parameter(S)",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
+func MaximumConnection(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100107",
+		Type:          "Pool Error",
+		Message:       "maximum connection exceeded",
+		Details:       "maximum connection exceeded",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
