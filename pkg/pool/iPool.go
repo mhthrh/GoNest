@@ -6,7 +6,7 @@ import (
 )
 
 type IConnection interface {
-	Maker(chan Request) chan Response
+	Maker(chan Request, chan Response)
 	Manager(chan Connection)
 	Refresh(chan struct{}) chan Response
 	Release(chan uuid.UUID) chan Response
@@ -24,6 +24,7 @@ type Connection struct {
 type Request struct {
 	Count uint
 	Type  CTypes
+	Stop  bool
 }
 type Response struct {
 	Total uint

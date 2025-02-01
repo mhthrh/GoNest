@@ -86,3 +86,13 @@ func MaximumConnection(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
+func ConnectionTypeNotAcceptable(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100108",
+		Type:          "Pool Error",
+		Message:       "connection type not acceptable",
+		Details:       "connection type not acceptable",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}

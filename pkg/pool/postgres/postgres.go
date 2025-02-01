@@ -21,7 +21,6 @@ const (
 
 var (
 	connections map[string]pool.Connection
-	stop        chan struct{}
 )
 
 type Config struct {
@@ -30,7 +29,6 @@ type Config struct {
 
 func init() {
 	connections = make(map[string]pool.Connection)
-
 }
 
 func New(db model.DB) (pool.IConnection, *customModelError.XError) {
@@ -40,10 +38,21 @@ func New(db model.DB) (pool.IConnection, *customModelError.XError) {
 	return Config{db: db}, nil
 }
 
-func (c Config) Maker(request chan pool.Request) (response chan pool.Response) {
+func (c Config) Maker(request chan pool.Request, response chan pool.Response) {
 	for {
 		select {
 		case r := <-request:
+
+			if r.Stop {
+				return
+			}
+			if r.Type != pool.CTypes(1) {
+				response <- pool.Response{
+					Total: 0,
+					InUse: 0,
+					Error: customError.ConnectionTypeNotAcceptable(nil),
+				}
+			}
 			switch {
 			case r.Count == 0:
 				response <- pool.Response{

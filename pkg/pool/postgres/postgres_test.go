@@ -8,6 +8,7 @@ import (
 	customModelError "github.com/mhthrh/common-lib/errors"
 	customeError "github.com/mhthrh/common-lib/errors/pool"
 	"github.com/mhthrh/common-lib/model/test"
+	"github.com/mhthrh/common-lib/pkg/pool"
 	"testing"
 )
 
@@ -57,4 +58,44 @@ func TestNew(t *testing.T) {
 			t.Error(fmt.Errorf("expected nil but got %v", e))
 		}
 	}
+}
+
+func TestMaker(t *testing.T) {
+	inp := struct {
+		req chan pool.Request
+		res chan pool.Response
+	}
+	{
+		req: make(chan pool.Request),
+		res: make(chan pool.Response),
+	}
+
+	p, err := New(c.DataBase)
+	if err != nil {
+		t.Error(err)
+	}
+	go p.Maker(inp.req, inp.res)
+	tests := []test.Test{
+		{
+			Name:     "test-1",
+			Input:    inp,
+			OutPut:   nil,
+			HasError: true,
+			Err:      customeError.ConnectionTypeNotAcceptable(nil),
+		},
+	}
+	for _, tst := range tests {
+		tst.Input.(inp)
+		//tst.OutPut.(chan pool.Response) <- res
+		fmt.Println(<-inp.res)
+		if tst.HasError {
+			if e == nil {
+				t.Error(fmt.Errorf("expected error but got nil"))
+			}
+			if e.Code != tst.Err.Code {
+				t.Error(fmt.Errorf("expected error code %v but got %v", tst.Err.Code, e.Code))
+			}
+		}
+	}
+
 }
