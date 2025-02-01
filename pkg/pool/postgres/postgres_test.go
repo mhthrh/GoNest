@@ -12,19 +12,19 @@ import (
 )
 
 var (
-	f l.IConfig
-	e *customModelError.XError
-	c *l.Config
+	f     l.IConfig
+	e     *customModelError.XError
+	c, c1 *l.Config
 )
 
-func TestNew(t *testing.T) {
+func init() {
 	f, e = file.New("common-lib/config/file", "config-test.json")
-	c, e = f.Initialize()
-	c1, e := f.Initialize()
-	if e != nil {
-		t.Error("Failed to initialize config")
-	}
+	c, _ = f.Initialize()
+	c1, _ = f.Initialize()
 	c1.DataBase.Host = ""
+}
+func TestNew(t *testing.T) {
+
 	tests := []test.Test{
 		{
 			Name:     "test-1",
@@ -57,5 +57,4 @@ func TestNew(t *testing.T) {
 			t.Error(fmt.Errorf("expected nil but got %v", e))
 		}
 	}
-
 }
