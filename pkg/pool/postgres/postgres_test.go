@@ -88,7 +88,7 @@ func TestMaker(t *testing.T) {
 		Stop:  true,
 	},
 	}
-	go p.Maker(&input.req, &input.res)
+	go p.Maker(input.req, input.res)
 
 	for i, tst := range tests {
 		input.req <- tst

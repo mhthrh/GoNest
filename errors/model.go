@@ -26,3 +26,14 @@ func RunTimeError(err error) *XError {
 		Time:          time.Now().String(),
 	}
 }
+
+func Success() *XError {
+	return &XError{
+		Code:          "GLOB100000",
+		Type:          "General response",
+		Message:       "success",
+		Details:       "success",
+		InternalError: nil,
+		Time:          time.Now().String(),
+	}
+}

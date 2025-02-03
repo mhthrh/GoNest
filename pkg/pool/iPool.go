@@ -6,11 +6,11 @@ import (
 )
 
 type IConnection interface {
-	Maker(*chan Request, *chan Response)
-	Manager(chan Connection)
-	Refresh(chan struct{}) chan Response
-	Release(chan uuid.UUID) chan Response
-	ReleaseAll() *customModelError.XError
+	Maker(chan Request, chan Response)
+	Manager(chan struct{}, chan Connection)
+	Refresh(chan struct{}, chan *customModelError.XError)
+	Release(chan ReleaseRequest, chan *customModelError.XError)
+	ReleaseAll(bool) *customModelError.XError
 }
 
 // Connection If the value is nil, this method retrieves a connection from the pool.If a valid connection is provided, it returns the connection to the pool.
@@ -30,4 +30,9 @@ type Response struct {
 	Total uint
 	InUse uint
 	Error *customModelError.XError
+}
+type ReleaseRequest struct {
+	ID    uuid.UUID
+	Force bool
+	Stop  bool
 }
