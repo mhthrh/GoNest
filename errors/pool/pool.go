@@ -96,3 +96,13 @@ func ConnectionTypeNotAcceptable(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
+func StopSignal(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB100109",
+		Type:          "Pool Error",
+		Message:       "stop signal detected",
+		Details:       "stop signal detected",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}

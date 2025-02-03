@@ -61,11 +61,11 @@ func TestNew(t *testing.T) {
 }
 
 func TestMaker(t *testing.T) {
-	inp := struct {
+	type Input struct {
 		req chan pool.Request
 		res chan pool.Response
 	}
-	{
+	input := Input{
 		req: make(chan pool.Request),
 		res: make(chan pool.Response),
 	}
@@ -74,28 +74,50 @@ func TestMaker(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	go p.Maker(inp.req, inp.res)
-	tests := []test.Test{
-		{
-			Name:     "test-1",
-			Input:    inp,
-			OutPut:   nil,
-			HasError: true,
-			Err:      customeError.ConnectionTypeNotAcceptable(nil),
-		},
+	tests := []pool.Request{{
+		Count: 10,
+		Type:  pool.CTypes(0),
+		Stop:  false,
+	}, {
+		Count: 10,
+		Type:  pool.CTypes(1),
+		Stop:  false,
+	}, {
+		Count: 0,
+		Type:  0,
+		Stop:  true,
+	},
 	}
-	for _, tst := range tests {
-		tst.Input.(inp)
-		//tst.OutPut.(chan pool.Response) <- res
-		fmt.Println(<-inp.res)
-		if tst.HasError {
-			if e == nil {
-				t.Error(fmt.Errorf("expected error but got nil"))
+	go p.Maker(&input.req, &input.res)
+
+	for i, tst := range tests {
+		input.req <- tst
+		select {
+		case r := <-input.res:
+			switch i {
+			case 0:
+				if r.Error == nil {
+					t.Error(fmt.Errorf("expected no error but got %v", r.Error))
+				}
+				if r.Error.Code != customeError.ConnectionTypeNotAcceptable(nil).Code {
+					t.Errorf("expected stop signal but got %v", r.Error)
+				}
+			case 1:
+				if r.Error != nil {
+					t.Error(fmt.Errorf("expected no error but got %v", r.Error))
+				}
+				if r.Total != tst.Count {
+					t.Error(fmt.Errorf("expected %v got %v", tst.Count, r.Total))
+				}
+			case 2:
+				if r.Error == nil {
+					t.Error(fmt.Errorf("expercted %v got no error", r.Error))
+				}
+				if r.Error.Code != customeError.StopSignal(nil).Code {
+					t.Errorf("expected stop signal but got %v", r.Error)
+				}
 			}
-			if e.Code != tst.Err.Code {
-				t.Error(fmt.Errorf("expected error code %v but got %v", tst.Err.Code, e.Code))
-			}
+
 		}
 	}
-
 }

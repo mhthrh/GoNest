@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/samber/lo v1.49.1 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
