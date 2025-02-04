@@ -10,7 +10,7 @@ import (
 )
 
 type FileConfig struct {
-	path string
+	Path string
 	name string
 }
 
@@ -27,7 +27,7 @@ func New(val ...interface{}) (loader.IConfig, *customModelError.XError) {
 	if v1, ok := val[0].(string); ok {
 		if v2, ok := val[1].(string); ok {
 			return &FileConfig{
-				path: v1,
+				Path: v1,
 				name: v2,
 			}, nil
 		}
@@ -38,7 +38,7 @@ func New(val ...interface{}) (loader.IConfig, *customModelError.XError) {
 func (f FileConfig) Initialize() (*loader.Config, *customModelError.XError) {
 	var config loader.Config
 	textFile.FileName = f.name
-	textFile.FilePath = f.path
+	textFile.FilePath = f.Path
 
 	b := textFile.New(nil)
 	if err := b.Read(); err != nil {

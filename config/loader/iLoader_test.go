@@ -13,7 +13,7 @@ func TestFileConfig_Initialize(t *testing.T) {
 			Name: "Test-1",
 			Input: file.FileConfig{
 				path: "",
-				name: "",
+				Name: "",
 			},
 			OutPut:   Config{},
 			HasError: false,
@@ -23,7 +23,7 @@ func TestFileConfig_Initialize(t *testing.T) {
 	for _, tt := range tests {
 
 		f := file.FileConfig{
-			path: tt.Input.(file.FileConfig).path,
+			Path: tt.Input.(file.FileConfig).Path,
 			name: tt.Input.(file.FileConfig).name,
 		}
 		got, err := f.Initialize()

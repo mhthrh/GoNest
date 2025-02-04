@@ -76,11 +76,11 @@ func TestMaker(t *testing.T) {
 	}
 	tests := []pool.Request{{
 		Count: 10,
-		Type:  pool.CTypes(0),
+		Type:  pool.Types(0),
 		Stop:  false,
 	}, {
 		Count: 10,
-		Type:  pool.CTypes(1),
+		Type:  pool.Types(1),
 		Stop:  false,
 	}, {
 		Count: 0,

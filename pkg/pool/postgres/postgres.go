@@ -68,7 +68,7 @@ func (c Config) Maker(request chan pool.Request, response chan pool.Response) {
 				stop = true
 				return
 			}
-			if r.Type != pool.CTypes(1) {
+			if r.Type != pool.Types(1) {
 				response <- pool.Response{
 					Total: 0,
 					InUse: 0,
@@ -129,9 +129,9 @@ func (c Config) Manager(cmd chan pool.ManageRequest, conn chan *pool.Connection)
 		select {
 		case command := <-cmd:
 			switch command.Command {
-			case pool.CCommands(0):
+			case pool.Commands(0):
 				conn <- &pool.Connection{}
-			case pool.CCommands(1):
+			case pool.Commands(1):
 				c.m.Lock()
 				stop := time.After(waitForFreeCnn)
 				for {
@@ -155,7 +155,7 @@ func (c Config) Manager(cmd chan pool.ManageRequest, conn chan *pool.Connection)
 						}
 					}
 				}
-			case pool.CCommands(2):
+			case pool.Commands(2):
 				cn, ok := connections[command.ID.String()]
 				if !ok {
 					conn <- &pool.Connection{

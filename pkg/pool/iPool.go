@@ -24,7 +24,7 @@ type Connection struct {
 // Request If count is 0, this method queries the current number of connections. Otherwise, it updates the connection count accordingly.
 type Request struct {
 	Count uint
-	Type  CTypes
+	Type  Types
 	Stop  bool
 }
 type Response struct {
@@ -38,6 +38,6 @@ type ReleaseRequest struct {
 	Stop  bool
 }
 type ManageRequest struct {
-	Command CCommands
+	Command Commands
 	ID      uuid.UUID
 }
