@@ -116,3 +116,13 @@ func FreeConnectionNotExist(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
+func CommandNotExist(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB1001011",
+		Type:          "Pool Error",
+		Message:       "command not exist",
+		Details:       "command not exist",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}

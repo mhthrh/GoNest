@@ -48,7 +48,7 @@ func New(db model.DB) (pool.IConnection, *customModelError.XError) {
 	return ins, nil
 }
 
-func (c Config) Maker(request chan pool.Request, response chan pool.Response) {
+func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response) {
 	stop := false
 	defer func() {
 		if stop {
@@ -88,7 +88,7 @@ func (c Config) Maker(request chan pool.Request, response chan pool.Response) {
 				}
 				continue
 			case r.Count > 0:
-				if len(connections) >= int(r.Count) {
+				if len(connections) > int(r.Count) {
 					response <- pool.Response{
 						Total: r.Count,
 						InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
@@ -124,13 +124,18 @@ func (c Config) Maker(request chan pool.Request, response chan pool.Response) {
 	}
 }
 
-func (c Config) Manager(cmd chan pool.ManageRequest, conn chan *pool.Connection) {
+func (c Config) Manager(cmd <-chan pool.ManageRequest, conn chan<- *pool.Connection) {
 	for {
 		select {
 		case command := <-cmd:
 			switch command.Command {
 			case pool.Commands(0):
-				conn <- &pool.Connection{}
+				conn <- &pool.Connection{
+					Id:    uuid.UUID{},
+					Cnn:   nil,
+					InUse: false,
+					Err:   customError.CommandNotExist(nil),
+				}
 			case pool.Commands(1):
 				c.m.Lock()
 				stop := time.After(waitForFreeCnn)
@@ -207,6 +212,7 @@ func (c Config) Refresh(s chan struct{}, e chan *customModelError.XError) {
 					connections = merge(connections, con)
 				}
 			}
+			e <- customModelError.Success()
 		}
 	}
 }
@@ -221,14 +227,15 @@ func (c Config) Release(request chan pool.ReleaseRequest, e chan *customModelErr
 			}
 			connection, ok := connections[r.ID.String()]
 			if !ok {
-				e <- customError.ConnectionInUse(nil)
+				e <- customError.DbCnnNotExist(nil)
 				continue
 			}
 			c.m.Lock()
-			defer c.m.Unlock()
 			_ = connection.Cnn.(*sql.DB).Close()
 			connection.Cnn = nil
 			delete(connections, r.ID.String())
+			c.m.Unlock()
+			e <- customModelError.Success()
 		}
 	}
 }

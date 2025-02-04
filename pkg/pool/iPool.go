@@ -6,8 +6,8 @@ import (
 )
 
 type IConnection interface {
-	Maker(chan Request, chan Response)
-	Manager(chan ManageRequest, chan *Connection)
+	Maker(<-chan Request, chan<- Response)
+	Manager(<-chan ManageRequest, chan<- *Connection)
 	Refresh(chan struct{}, chan *customModelError.XError)
 	Release(chan ReleaseRequest, chan *customModelError.XError)
 	ReleaseAll(bool) *customModelError.XError

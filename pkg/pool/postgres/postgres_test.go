@@ -1,7 +1,9 @@
 package postgres
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/google/uuid"
 	l "github.com/mhthrh/common-lib/config/loader"
 	"github.com/mhthrh/common-lib/config/loader/file"
 	"github.com/mhthrh/common-lib/config/model"
@@ -14,12 +16,11 @@ import (
 
 var (
 	f     l.IConfig
-	e     *customModelError.XError
 	c, c1 *l.Config
 )
 
 func init() {
-	f, e = file.New("common-lib/config/file", "config-test.json")
+	f, _ = file.New("common-lib/config/file", "config-test.json")
 	c, _ = f.Initialize()
 	c1, _ = f.Initialize()
 	c1.DataBase.Host = ""
@@ -119,5 +120,206 @@ func TestMaker(t *testing.T) {
 			}
 
 		}
+	}
+}
+
+func TestManager(t *testing.T) {
+	req := make(chan pool.Request)
+	res := make(chan pool.Response)
+	var id uuid.UUID
+	request := make(chan pool.ManageRequest)
+	response := make(chan *pool.Connection)
+
+	p, err := New(c.DataBase)
+	if err != nil {
+		t.Error(err)
+	}
+	go p.Maker(req, res)
+	req <- pool.Request{
+		Count: 10,
+		Type:  pool.Types(1),
+		Stop:  false,
+	}
+	result := <-res
+	if result.Error != nil {
+		t.Error(fmt.Errorf("expected no error but got %v", result.Error))
+	}
+
+	tests := []pool.ManageRequest{
+		{
+			Command: pool.Commands(0),
+			ID:      uuid.UUID{},
+		}, {
+			Command: pool.Commands(1),
+			ID:      uuid.UUID{},
+		}, {
+			Command: pool.Commands(2),
+			ID:      uuid.New(),
+		}, {
+			Command: pool.Commands(2),
+			ID:      uuid.UUID{},
+		},
+	}
+	go p.Manager(request, response)
+	for i, tst := range tests {
+		if i == 3 {
+			tst.ID = id
+		}
+		request <- pool.ManageRequest{
+			Command: tst.Command,
+			ID:      tst.ID,
+		}
+		r := <-response
+		switch i {
+		case 0:
+			if r.Err == nil {
+				t.Error(fmt.Errorf("expected error but got nil"))
+			}
+			if r.Err.Code != customeError.CommandNotExist(nil).Code {
+				t.Errorf("expected %v but got %v", customeError.CommandNotExist(nil), r.Err)
+			}
+		case 1:
+			if r.Err != nil {
+				t.Error(fmt.Errorf("expected no error but got %v", r.Err))
+			}
+			if r.Cnn.(*sql.DB).Ping() != nil {
+				t.Error(fmt.Errorf("expected open connection but got %v", r.Cnn.(*sql.DB).Ping()))
+			}
+			id = r.Id
+		case 2:
+			if r.Err.Code != customeError.DbCnnNotExist(nil).Code {
+				t.Error(fmt.Errorf("expected %v but got %v", customeError.DbCnnNotExist(nil), r.Err))
+			}
+		case 3:
+			if r.Err.Code != customModelError.Success().Code {
+				t.Error(fmt.Errorf("expected %v but got %v", customModelError.Success(), r.Err))
+			}
+
+		}
+	}
+}
+
+func TestRefresh(t *testing.T) {
+	req := make(chan struct{})
+	res := make(chan *customModelError.XError)
+	request := make(chan pool.Request)
+	response := make(chan pool.Response)
+
+	p, err := New(c.DataBase)
+	if err != nil {
+		t.Error(err)
+	}
+	go p.Maker(request, response)
+	request <- pool.Request{
+		Count: 10,
+		Type:  pool.Types(1),
+		Stop:  false,
+	}
+	result := <-response
+	if result.Error != nil {
+		t.Error(fmt.Errorf("expected no error but got %v", result.Error))
+	}
+
+	go p.Refresh(req, res)
+	req <- struct{}{}
+	r := <-res
+	if r.Code != customModelError.Success().Code {
+		t.Error(fmt.Errorf("expected %v but got %v", customModelError.Success(), r.Code))
+	}
+}
+
+func TestRelease(t *testing.T) {
+	req := make(chan pool.ReleaseRequest)
+	res := make(chan *customModelError.XError)
+
+	manageRequest := make(chan pool.ManageRequest)
+	manageResponse := make(chan *pool.Connection)
+
+	request := make(chan pool.Request)
+	response := make(chan pool.Response)
+
+	p, err := New(c.DataBase)
+	if err != nil {
+		t.Error(err)
+	}
+	go p.Maker(request, response)
+	request <- pool.Request{
+		Count: 10,
+		Type:  pool.Types(1),
+		Stop:  false,
+	}
+	result := <-response
+	if result.Error != nil {
+		t.Error(fmt.Errorf("expected no error but got %v", result.Error))
+	}
+
+	go p.Manager(manageRequest, manageResponse)
+	manageRequest <- pool.ManageRequest{
+		Command: pool.Commands(1),
+		ID:      uuid.UUID{},
+	}
+	mRes := <-manageResponse
+
+	if mRes.Err != nil {
+		t.Error(fmt.Errorf("expected no error but got %v", mRes.Err))
+	}
+	go p.Release(req, res)
+
+	tests := []pool.ReleaseRequest{
+		{
+			ID:    uuid.New(),
+			Force: false,
+			Stop:  false,
+		}, {
+			ID:    mRes.Id,
+			Force: false,
+			Stop:  false,
+		}, {
+			ID:    mRes.Id,
+			Force: false,
+			Stop:  true,
+		},
+	}
+
+	for i, tst := range tests {
+		req <- tst
+		r := <-res
+		switch i {
+		case 0:
+			if r == nil {
+				t.Error(fmt.Errorf("expected %v but got nil", customeError.DbCnnNotExist(nil)))
+			}
+		case 1:
+			if r.Code != customModelError.Success().Code {
+				t.Error(fmt.Errorf("expected %v but got %v", customModelError.Success(), r.Code))
+			}
+		case 2:
+			if r.Code != customModelError.Success().Code {
+				t.Error(fmt.Errorf("expected %v but got %v", customModelError.Success(), r.Code))
+			}
+		}
+
+	}
+}
+func TestReleaseAll(t *testing.T) {
+	request := make(chan pool.Request)
+	response := make(chan pool.Response)
+	p, err := New(c.DataBase)
+	if err != nil {
+		t.Error(err)
+	}
+	go p.Maker(request, response)
+	request <- pool.Request{
+		Count: 10,
+		Type:  pool.Types(1),
+		Stop:  false,
+	}
+	result := <-response
+	if result.Error != nil {
+		t.Error(fmt.Errorf("expected no error but got %v", result.Error))
+	}
+	err = p.ReleaseAll(true)
+	if err != nil {
+		t.Error(fmt.Errorf("expected no error but got %v", err))
 	}
 }
