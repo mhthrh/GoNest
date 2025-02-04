@@ -20,7 +20,7 @@ var (
 )
 
 func init() {
-	f, _ = file.New("common-lib/config/file", "config-test.json")
+	f = file.New("common-lib/config/file", "config-test.json")
 	c, _ = f.Initialize()
 	c1, _ = f.Initialize()
 	c1.DataBase.Host = ""

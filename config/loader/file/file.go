@@ -6,7 +6,6 @@ import (
 	customModelError "github.com/mhthrh/common-lib/errors"
 	customError "github.com/mhthrh/common-lib/errors/config"
 	textFile "github.com/mhthrh/common-lib/pkg/util/file/text"
-	"strings"
 )
 
 type FileConfig struct {
@@ -14,37 +13,22 @@ type FileConfig struct {
 	name string
 }
 
-func New(val ...interface{}) (loader.IConfig, *customModelError.XError) {
-
-	if len(val) < 2 {
-		return nil, customError.FileParameter(nil)
+func New(path, name string) loader.IConfig {
+	return &FileConfig{
+		Path: path,
+		name: name,
 	}
-	for _, v := range val {
-		if strings.Trim(v.(string), " ") == "" {
-			return nil, customError.FileParameter(nil)
-		}
-	}
-	if v1, ok := val[0].(string); ok {
-		if v2, ok := val[1].(string); ok {
-			return &FileConfig{
-				Path: v1,
-				name: v2,
-			}, nil
-		}
-	}
-	return nil, customError.FileParameter(nil)
 }
 
 func (f FileConfig) Initialize() (*loader.Config, *customModelError.XError) {
 	var config loader.Config
-	textFile.FileName = f.name
-	textFile.FilePath = f.Path
+	text := textFile.New(f.Path, f.name)
 
-	b := textFile.New(nil)
-	if err := b.Read(); err != nil {
+	b, err := text.Read()
+	if err != nil {
 		return nil, customError.FileInitializerError(customModelError.RunTimeError(err))
 	}
-	err := json.Unmarshal(b.Data, &config)
+	err = json.Unmarshal(b, &config)
 	if err != nil {
 		return nil, customError.FileInitializerError(customModelError.RunTimeError(err))
 	}

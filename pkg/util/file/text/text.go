@@ -2,39 +2,39 @@ package text
 
 import (
 	"github.com/mhthrh/common-lib/pkg/util/directory"
+	"github.com/mhthrh/common-lib/pkg/util/file"
 	"os"
 	"path/filepath"
 )
 
 var (
-	FilePath = ""
-	FileName = ""
-	appPath  = ""
+	appPath = ""
 )
-
-type File struct {
-	Data []byte
-}
 
 func init() {
 	appPath = directory.GetAppRootDir()
 }
-func New(data []byte) *File {
+
+type File struct {
+	path string
+	name string
+}
+
+func New(path, name string) file.IFile {
 	return &File{
-		Data: data,
+		path: path,
+		name: name,
 	}
 }
-
-func (f *File) Read() error {
-	data, e := os.ReadFile(filepath.Join(appPath, FilePath, FileName))
+func (f *File) Read() ([]byte, error) {
+	data, e := os.ReadFile(filepath.Join(appPath, f.path, f.name))
 	if e != nil {
-		return e
+		return nil, e
 	}
-
-	f.Data = data
-	return nil
+	return data, nil
 }
 
-func (f *File) Write() error {
-	return nil
+func (f *File) Write(bytes []byte) error {
+	//TODO implement me
+	panic("implement me")
 }

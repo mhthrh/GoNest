@@ -5,35 +5,39 @@ import (
 	"encoding/csv"
 	"errors"
 	"github.com/mhthrh/common-lib/pkg/util/directory"
+	"github.com/mhthrh/common-lib/pkg/util/file"
 	"os"
 	"path/filepath"
 )
 
 var (
-	FilePath = ""
-	FileName = ""
-	appPath  = ""
+	appPath = ""
 )
 
+func init() {
+	appPath = directory.GetAppRootDir()
+}
+
 type File struct {
-	Data []byte
+	path string
+	name string
 }
 
 func init() {
 	appPath = directory.GetAppRootDir()
 }
-func New(data []byte) *File {
+func New(path, name string) file.IFile {
 	return &File{
-		Data: data,
+		path: path,
+		name: name,
 	}
 }
 
-func (f *File) Read() error {
-
+func (f *File) Read() ([]byte, error) {
 	var buf bytes.Buffer
-	file, e := os.Open(filepath.Join(appPath, FilePath, FileName))
+	file, e := os.Open(filepath.Join(appPath, f.path, f.name))
 	if e != nil {
-		return e
+		return nil, e
 	}
 	defer func() {
 		_ = file.Close()
@@ -43,20 +47,20 @@ func (f *File) Read() error {
 
 	c, e := r.ReadAll()
 	if e != nil {
-		return e
+		return nil, e
 	}
 
 	e = csv.NewWriter(&buf).WriteAll(c)
 
 	if e != nil {
-		return errors.New("error writing CSV")
+		return nil, errors.New("error writing CSV")
 
 	}
 
-	f.Data = buf.Bytes()
-	return nil
+	return buf.Bytes(), nil
 }
 
-func (f *File) Write() error {
-	return nil
+func (f *File) Write(i []byte) error {
+	//TODO implement me
+	panic("implement me")
 }
