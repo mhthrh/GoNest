@@ -106,3 +106,13 @@ func StopSignal(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
+func FreeConnectionNotExist(e *errors.XError) *errors.XError {
+	return &errors.XError{
+		Code:          "DB1001010",
+		Type:          "Pool Error",
+		Message:       "free connection not exist",
+		Details:       "free connection not exist",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}

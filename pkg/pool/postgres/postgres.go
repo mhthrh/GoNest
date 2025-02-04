@@ -16,13 +16,14 @@ import (
 )
 
 const (
-	psql                   = "host=%s port=%d user=%s password=%s dbname=%s sslmode=%s"
-	checkCnnStatusDuration = time.Millisecond * 10
-	totalWaitForReleaseAll = time.Second * 10
+	psql           = "host=%s port=%d user=%s password=%s dbname=%s sslmode=%s"
+	waitForFreeCnn = time.Millisecond * 100
 )
 
 var (
 	connections map[string]pool.Connection
+	ins         pool.IConnection
+	once        sync.Once
 )
 
 type Config struct {
@@ -38,7 +39,13 @@ func New(db model.DB) (pool.IConnection, *customModelError.XError) {
 	if strings.Trim(db.Host, " ") == "" {
 		return nil, customError.InputParamsMismatch(nil)
 	}
-	return Config{db: db}, nil
+	once.Do(func() {
+		ins = Config{
+			db: db,
+			m:  &sync.Mutex{},
+		}
+	})
+	return ins, nil
 }
 
 func (c Config) Maker(request chan pool.Request, response chan pool.Response) {
@@ -117,9 +124,61 @@ func (c Config) Maker(request chan pool.Request, response chan pool.Response) {
 	}
 }
 
-func (c Config) Manager(s chan struct{}, conn chan pool.Connection) {
-	//TODO implement me
-	panic("implement me")
+func (c Config) Manager(cmd chan pool.ManageRequest, conn chan *pool.Connection) {
+	for {
+		select {
+		case command := <-cmd:
+			switch command.Command {
+			case pool.CCommands(0):
+				conn <- &pool.Connection{}
+			case pool.CCommands(1):
+				c.m.Lock()
+				stop := time.After(waitForFreeCnn)
+				for {
+					select {
+					case <-stop:
+						c.m.Unlock()
+						conn <- &pool.Connection{
+							Id:    uuid.UUID{},
+							Cnn:   nil,
+							InUse: false,
+							Err:   customError.FreeConnectionNotExist(nil),
+						}
+					default:
+						for _, cn := range connections {
+							if !cn.InUse {
+								cn.InUse = true
+								conn <- &cn
+								c.m.Unlock()
+								goto indicator
+							}
+						}
+					}
+				}
+			case pool.CCommands(2):
+				cn, ok := connections[command.ID.String()]
+				if !ok {
+					conn <- &pool.Connection{
+						Id:    uuid.UUID{},
+						Cnn:   nil,
+						InUse: false,
+						Err:   customError.DbCnnNotExist(nil),
+					}
+					continue
+				}
+				cn.InUse = false
+				conn <- &pool.Connection{
+					Id:    uuid.UUID{},
+					Cnn:   nil,
+					InUse: false,
+					Err:   customModelError.Success(),
+				}
+
+			}
+		indicator:
+		}
+	}
+
 }
 
 func (c Config) Refresh(s chan struct{}, e chan *customModelError.XError) {
@@ -186,6 +245,7 @@ func (c Config) ReleaseAll(byForce bool) *customModelError.XError {
 	}
 	return nil
 }
+
 func newConnection(d model.DB) (m map[string]pool.Connection, e *customModelError.XError) {
 	cnn, err := sql.Open(d.Driver, fmt.Sprintf(psql, d.Host, d.Port, d.UserName, d.Password, d.DbName, d.SSLMode))
 	if err != nil {

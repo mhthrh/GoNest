@@ -7,7 +7,7 @@ import (
 
 type IConnection interface {
 	Maker(chan Request, chan Response)
-	Manager(chan struct{}, chan Connection)
+	Manager(chan ManageRequest, chan *Connection)
 	Refresh(chan struct{}, chan *customModelError.XError)
 	Release(chan ReleaseRequest, chan *customModelError.XError)
 	ReleaseAll(bool) *customModelError.XError
@@ -18,6 +18,7 @@ type Connection struct {
 	Id    uuid.UUID
 	Cnn   interface{}
 	InUse bool
+	Err   *customModelError.XError
 }
 
 // Request If count is 0, this method queries the current number of connections. Otherwise, it updates the connection count accordingly.
@@ -35,4 +36,8 @@ type ReleaseRequest struct {
 	ID    uuid.UUID
 	Force bool
 	Stop  bool
+}
+type ManageRequest struct {
+	Command CCommands
+	ID      uuid.UUID
 }
