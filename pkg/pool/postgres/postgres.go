@@ -247,6 +247,7 @@ func (c Config) ReleaseAll(byForce bool) *customModelError.XError {
 }
 
 func newConnection(d model.DB) (m map[string]pool.Connection, e *customModelError.XError) {
+	m = make(map[string]pool.Connection)
 	cnn, err := sql.Open(d.Driver, fmt.Sprintf(psql, d.Host, d.Port, d.UserName, d.Password, d.DbName, d.SSLMode))
 	if err != nil {
 		e = customError.DbConnectionFailed(customModelError.RunTimeError(err))
@@ -261,7 +262,7 @@ func newConnection(d model.DB) (m map[string]pool.Connection, e *customModelErro
 	return m, nil
 }
 func merge(dictionaries ...map[string]pool.Connection) map[string]pool.Connection {
-	var res map[string]pool.Connection
+	res := make(map[string]pool.Connection)
 	for _, di := range dictionaries {
 		for k, v := range di {
 			res[k] = v

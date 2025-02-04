@@ -1,11 +1,12 @@
 package pool
 
-//go:generate stringer -type=CTypes
 
-type CTypes int
+//go:generate stringer -type=Types
+
+type Types int
 
 const (
-	none CTypes = iota
+	none Types = iota
 	postgres
 	oracle
 	msSql
