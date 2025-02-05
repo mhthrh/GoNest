@@ -7,8 +7,8 @@ import (
 type ICountry interface {
 	Load() *cErrModel.XError
 	Countries() ([]Country, *cErrModel.XError)
-	GetByName(country string) (*Country, *cErrModel.XError)
-	GetByCode(city string) (*Country, *cErrModel.XError)
+	GetByName(name string) (*Country, *cErrModel.XError)
+	GetByCode(code string) (*Country, *cErrModel.XError)
 }
 type Country struct {
 	ID   string `json:"id"`
