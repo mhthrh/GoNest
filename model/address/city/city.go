@@ -6,9 +6,9 @@ import (
 )
 
 type ICity interface {
-	Load() ([]City, cErrModel.XError)
-	GetByCountry(country string) ([]City, cErrModel.XError)
-	GetByCity(city string) ([]City, cErrModel.XError)
+	Load() ([]City, *cErrModel.XError)
+	GetByCountry(country string) ([]City, *cErrModel.XError)
+	GetByCity(city string) ([]City, *cErrModel.XError)
 }
 type City struct {
 	ID          uuid.UUID `json:"id"`

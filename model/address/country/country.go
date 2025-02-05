@@ -5,8 +5,8 @@ import (
 )
 
 type ICountry interface {
-	Load() []Country
-	GetByName(string) Country
+	Load() ([]Country, *cErrModel.XError)
+	GetByName(string) (Country, *cErrModel.XError)
 	GetByCode(string) (Country, *cErrModel.XError)
 }
 type Country struct {
