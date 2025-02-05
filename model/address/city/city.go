@@ -6,7 +6,8 @@ import (
 )
 
 type ICity interface {
-	Load() ([]City, *cErrModel.XError)
+	Load() *cErrModel.XError
+	Cities() []City
 	GetByCountry(country string) ([]City, *cErrModel.XError)
 	GetByCity(city string) ([]City, *cErrModel.XError)
 }
