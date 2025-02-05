@@ -5,6 +5,11 @@ import (
 	"github.com/mhthrh/common-lib/model/address/country"
 )
 
+type IAddress interface {
+	LoadAll() (*[]Address, error)
+	Allocate() (*Address, error)
+}
+
 type Address struct {
 	Street     string          `json:"street"`
 	City       city.City       `json:"city"`

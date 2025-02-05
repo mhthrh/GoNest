@@ -9,7 +9,7 @@ import (
 type Customer struct {
 	ID         uuid.UUID       `json:"id"`
 	CustomerID string          `json:"customerID"`
-	IdType     IdTypes         `json:"idType"`
+	IdType     Types           `json:"idType"`
 	Username   string          `json:"username"`
 	Password   string          `json:"password"`
 	Email      string          `json:"email"`

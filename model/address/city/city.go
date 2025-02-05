@@ -1,7 +1,15 @@
 package city
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	cErrModel "github.com/mhthrh/common-lib/errors"
+)
 
+type ICity interface {
+	Load() ([]City, cErrModel.XError)
+	GetByCountry(country string) ([]City, cErrModel.XError)
+	GetByCity(city string) ([]City, cErrModel.XError)
+}
 type City struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
