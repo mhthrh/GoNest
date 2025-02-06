@@ -2,7 +2,7 @@ package city
 
 import (
 	"github.com/google/uuid"
-	cErrModel "github.com/mhthrh/common-lib/model/error"
+	cErrModel "github.com/mhthrh/GoNest/model/error"
 )
 
 type ICity interface {

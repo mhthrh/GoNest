@@ -1,4 +1,4 @@
-module github.com/mhthrh/common-lib
+module github.com/mhthrh/GoNest
 
 go 1.23.5
 

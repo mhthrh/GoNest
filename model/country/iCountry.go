@@ -1,7 +1,7 @@
 package country
 
 import (
-	cErrModel "github.com/mhthrh/common-lib/model/error"
+	cErrModel "github.com/mhthrh/GoNest/model/error"
 )
 
 type ICountry interface {

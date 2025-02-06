@@ -2,9 +2,9 @@ package file
 
 import (
 	"encoding/json"
-	customModelError "github.com/mhthrh/common-lib/model/error"
-	"github.com/mhthrh/common-lib/model/loader"
-	textFile "github.com/mhthrh/common-lib/pkg/util/file/text"
+	customModelError "github.com/mhthrh/GoNest/model/error"
+	"github.com/mhthrh/GoNest/model/loader"
+	textFile "github.com/mhthrh/GoNest/pkg/util/file/text"
 )
 
 type FileConfig struct {

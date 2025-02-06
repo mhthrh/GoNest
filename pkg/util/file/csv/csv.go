@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/csv"
 	"errors"
-	"github.com/mhthrh/common-lib/pkg/util/directory"
-	"github.com/mhthrh/common-lib/pkg/util/file"
+	"github.com/mhthrh/GoNest/pkg/util/directory"
+	"github.com/mhthrh/GoNest/pkg/util/file"
 	"os"
 	"path/filepath"
 )

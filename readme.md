@@ -24,7 +24,7 @@ package main
 
 import (
     "fmt"
-    "github.com/mhthrh/common-lib"
+    "github.com/mhthrh/GoNest"
 )
 
 func main() {
