@@ -8,7 +8,7 @@ import (
 
 type XError struct {
 	Code          string  `json:"code"`
-	Type          string  `json:"type"`
+	Type          Types   `json:"type"`
 	Message       string  `json:"message"`
 	Details       string  `json:"detail"`
 	InternalError *XError `json:"internalError"`
@@ -19,7 +19,7 @@ func RunTimeError(err error) *XError {
 	_, file, line, _ := runtime.Caller(1)
 	return &XError{
 		Code:          "runtime",
-		Type:          "runtime",
+		Type:          Types(0),
 		Message:       err.Error(),
 		Details:       fmt.Sprintf("file name: %s, line number: %d", file, line),
 		InternalError: nil,
@@ -30,7 +30,7 @@ func RunTimeError(err error) *XError {
 func Success() *XError {
 	return &XError{
 		Code:          "GLOB100000",
-		Type:          "General response",
+		Type:          Types(2),
 		Message:       "success",
 		Details:       "success",
 		InternalError: nil,
