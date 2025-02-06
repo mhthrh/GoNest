@@ -4,12 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
-	l "github.com/mhthrh/common-lib/config/loader"
-	"github.com/mhthrh/common-lib/config/loader/file"
-	"github.com/mhthrh/common-lib/config/model"
 	customModelError "github.com/mhthrh/common-lib/model/error"
+	l "github.com/mhthrh/common-lib/model/loader"
+	pool2 "github.com/mhthrh/common-lib/model/pool"
 	"github.com/mhthrh/common-lib/model/test"
-	"github.com/mhthrh/common-lib/pkg/pool"
+	"github.com/mhthrh/common-lib/pkg/loader/file"
 	"testing"
 )
 
@@ -32,7 +31,7 @@ func TestNew(t *testing.T) {
 			Input:    c1.DataBase,
 			OutPut:   nil,
 			HasError: true,
-			Err:      pool.InputParamsMismatch(nil),
+			Err:      pool2.InputParamsMismatch(nil),
 		}, {
 			Name:     "test-2",
 			Input:    c.DataBase,
@@ -43,7 +42,7 @@ func TestNew(t *testing.T) {
 	}
 
 	for _, tst := range tests {
-		_, e := New(tst.Input.(model.DB))
+		_, e := New(tst.Input.(l.DB))
 		if tst.HasError {
 			if e == nil {
 				t.Error(fmt.Errorf("expected error but got nil"))
@@ -62,25 +61,25 @@ func TestNew(t *testing.T) {
 
 func TestMaker(t *testing.T) {
 	type Input struct {
-		req chan pool.Request
-		res chan pool.Response
+		req chan pool2.Request
+		res chan pool2.Response
 	}
 	input := Input{
-		req: make(chan pool.Request),
-		res: make(chan pool.Response),
+		req: make(chan pool2.Request),
+		res: make(chan pool2.Response),
 	}
 
 	p, err := New(c.DataBase)
 	if err != nil {
 		t.Error(err)
 	}
-	tests := []pool.Request{{
+	tests := []pool2.Request{{
 		Count: 10,
-		Type:  pool.Types(0),
+		Type:  pool2.Types(0),
 		Stop:  false,
 	}, {
 		Count: 10,
-		Type:  pool.Types(1),
+		Type:  pool2.Types(1),
 		Stop:  false,
 	}, {
 		Count: 0,
@@ -99,7 +98,7 @@ func TestMaker(t *testing.T) {
 				if r.Error == nil {
 					t.Error(fmt.Errorf("expected no error but got %v", r.Error))
 				}
-				if r.Error.Code != pool.ConnectionTypeNotAcceptable(nil).Code {
+				if r.Error.Code != pool2.ConnectionTypeNotAcceptable(nil).Code {
 					t.Errorf("expected stop signal but got %v", r.Error)
 				}
 			case 1:
@@ -113,7 +112,7 @@ func TestMaker(t *testing.T) {
 				if r.Error == nil {
 					t.Error(fmt.Errorf("expercted %v got no error", r.Error))
 				}
-				if r.Error.Code != pool.StopSignal(nil).Code {
+				if r.Error.Code != pool2.StopSignal(nil).Code {
 					t.Errorf("expected stop signal but got %v", r.Error)
 				}
 			}
@@ -123,20 +122,20 @@ func TestMaker(t *testing.T) {
 }
 
 func TestManager(t *testing.T) {
-	req := make(chan pool.Request)
-	res := make(chan pool.Response)
+	req := make(chan pool2.Request)
+	res := make(chan pool2.Response)
 	var id uuid.UUID
-	request := make(chan pool.ManageRequest)
-	response := make(chan *pool.Connection)
+	request := make(chan pool2.ManageRequest)
+	response := make(chan *pool2.Connection)
 
 	p, err := New(c.DataBase)
 	if err != nil {
 		t.Error(err)
 	}
 	go p.Maker(req, res)
-	req <- pool.Request{
+	req <- pool2.Request{
 		Count: 10,
-		Type:  pool.Types(1),
+		Type:  pool2.Types(1),
 		Stop:  false,
 	}
 	result := <-res
@@ -144,18 +143,18 @@ func TestManager(t *testing.T) {
 		t.Error(fmt.Errorf("expected no error but got %v", result.Error))
 	}
 
-	tests := []pool.ManageRequest{
+	tests := []pool2.ManageRequest{
 		{
-			Command: pool.Commands(0),
+			Command: pool2.Commands(0),
 			ID:      uuid.UUID{},
 		}, {
-			Command: pool.Commands(1),
+			Command: pool2.Commands(1),
 			ID:      uuid.UUID{},
 		}, {
-			Command: pool.Commands(2),
+			Command: pool2.Commands(2),
 			ID:      uuid.New(),
 		}, {
-			Command: pool.Commands(2),
+			Command: pool2.Commands(2),
 			ID:      uuid.UUID{},
 		},
 	}
@@ -164,7 +163,7 @@ func TestManager(t *testing.T) {
 		if i == 3 {
 			tst.ID = id
 		}
-		request <- pool.ManageRequest{
+		request <- pool2.ManageRequest{
 			Command: tst.Command,
 			ID:      tst.ID,
 		}
@@ -174,8 +173,8 @@ func TestManager(t *testing.T) {
 			if r.Err == nil {
 				t.Error(fmt.Errorf("expected error but got nil"))
 			}
-			if r.Err.Code != pool.CommandNotExist(nil).Code {
-				t.Errorf("expected %v but got %v", pool.CommandNotExist(nil), r.Err)
+			if r.Err.Code != pool2.CommandNotExist(nil).Code {
+				t.Errorf("expected %v but got %v", pool2.CommandNotExist(nil), r.Err)
 			}
 		case 1:
 			if r.Err != nil {
@@ -186,8 +185,8 @@ func TestManager(t *testing.T) {
 			}
 			id = r.Id
 		case 2:
-			if r.Err.Code != pool.DbCnnNotExist(nil).Code {
-				t.Error(fmt.Errorf("expected %v but got %v", pool.DbCnnNotExist(nil), r.Err))
+			if r.Err.Code != pool2.DbCnnNotExist(nil).Code {
+				t.Error(fmt.Errorf("expected %v but got %v", pool2.DbCnnNotExist(nil), r.Err))
 			}
 		case 3:
 			if r.Err.Code != customModelError.Success().Code {
@@ -201,17 +200,17 @@ func TestManager(t *testing.T) {
 func TestRefresh(t *testing.T) {
 	req := make(chan struct{})
 	res := make(chan *customModelError.XError)
-	request := make(chan pool.Request)
-	response := make(chan pool.Response)
+	request := make(chan pool2.Request)
+	response := make(chan pool2.Response)
 
 	p, err := New(c.DataBase)
 	if err != nil {
 		t.Error(err)
 	}
 	go p.Maker(request, response)
-	request <- pool.Request{
+	request <- pool2.Request{
 		Count: 10,
-		Type:  pool.Types(1),
+		Type:  pool2.Types(1),
 		Stop:  false,
 	}
 	result := <-response
@@ -228,23 +227,23 @@ func TestRefresh(t *testing.T) {
 }
 
 func TestRelease(t *testing.T) {
-	req := make(chan pool.ReleaseRequest)
+	req := make(chan pool2.ReleaseRequest)
 	res := make(chan *customModelError.XError)
 
-	manageRequest := make(chan pool.ManageRequest)
-	manageResponse := make(chan *pool.Connection)
+	manageRequest := make(chan pool2.ManageRequest)
+	manageResponse := make(chan *pool2.Connection)
 
-	request := make(chan pool.Request)
-	response := make(chan pool.Response)
+	request := make(chan pool2.Request)
+	response := make(chan pool2.Response)
 
 	p, err := New(c.DataBase)
 	if err != nil {
 		t.Error(err)
 	}
 	go p.Maker(request, response)
-	request <- pool.Request{
+	request <- pool2.Request{
 		Count: 10,
-		Type:  pool.Types(1),
+		Type:  pool2.Types(1),
 		Stop:  false,
 	}
 	result := <-response
@@ -253,8 +252,8 @@ func TestRelease(t *testing.T) {
 	}
 
 	go p.Manager(manageRequest, manageResponse)
-	manageRequest <- pool.ManageRequest{
-		Command: pool.Commands(1),
+	manageRequest <- pool2.ManageRequest{
+		Command: pool2.Commands(1),
 		ID:      uuid.UUID{},
 	}
 	mRes := <-manageResponse
@@ -264,7 +263,7 @@ func TestRelease(t *testing.T) {
 	}
 	go p.Release(req, res)
 
-	tests := []pool.ReleaseRequest{
+	tests := []pool2.ReleaseRequest{
 		{
 			ID:    uuid.New(),
 			Force: false,
@@ -286,7 +285,7 @@ func TestRelease(t *testing.T) {
 		switch i {
 		case 0:
 			if r == nil {
-				t.Error(fmt.Errorf("expected %v but got nil", pool.DbCnnNotExist(nil)))
+				t.Error(fmt.Errorf("expected %v but got nil", pool2.DbCnnNotExist(nil)))
 			}
 		case 1:
 			if r.Code != customModelError.Success().Code {
@@ -301,16 +300,16 @@ func TestRelease(t *testing.T) {
 	}
 }
 func TestReleaseAll(t *testing.T) {
-	request := make(chan pool.Request)
-	response := make(chan pool.Response)
+	request := make(chan pool2.Request)
+	response := make(chan pool2.Response)
 	p, err := New(c.DataBase)
 	if err != nil {
 		t.Error(err)
 	}
 	go p.Maker(request, response)
-	request <- pool.Request{
+	request <- pool2.Request{
 		Count: 10,
-		Type:  pool.Types(1),
+		Type:  pool2.Types(1),
 		Stop:  false,
 	}
 	result := <-response

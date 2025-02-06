@@ -1,4 +1,19 @@
-package model
+package loader
+
+import (
+	customModelError "github.com/mhthrh/common-lib/model/error"
+)
+
+type Config struct {
+	MetaData MetaData `json:"metaData"`
+	Secret   Secret   `json:"secret"`
+	DataBase DB       `json:"db"`
+}
+
+type IConfig interface {
+	Initialize() (*Config, *customModelError.XError)
+	PrintConfig() *customModelError.XError
+}
 
 type MetaData struct {
 	AppName    string `json:"appName"`

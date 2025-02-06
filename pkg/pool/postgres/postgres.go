@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
-	"github.com/mhthrh/common-lib/config/model"
 	customModelError "github.com/mhthrh/common-lib/model/error"
-	"github.com/mhthrh/common-lib/pkg/pool"
+	"github.com/mhthrh/common-lib/model/loader"
+	pool2 "github.com/mhthrh/common-lib/model/pool"
 	"github.com/samber/lo"
 	"strings"
 	"sync"
@@ -20,23 +20,23 @@ const (
 )
 
 var (
-	connections map[string]pool.Connection
-	ins         pool.IConnection
+	connections map[string]pool2.Connection
+	ins         pool2.IConnection
 	once        sync.Once
 )
 
 type Config struct {
-	db model.DB
+	db loader.DB
 	m  *sync.Mutex
 }
 
 func init() {
-	connections = make(map[string]pool.Connection)
+	connections = make(map[string]pool2.Connection)
 }
 
-func New(db model.DB) (pool.IConnection, *customModelError.XError) {
+func New(db loader.DB) (pool2.IConnection, *customModelError.XError) {
 	if strings.Trim(db.Host, " ") == "" {
-		return nil, pool.InputParamsMismatch(nil)
+		return nil, pool2.InputParamsMismatch(nil)
 	}
 	once.Do(func() {
 		ins = Config{
@@ -47,14 +47,14 @@ func New(db model.DB) (pool.IConnection, *customModelError.XError) {
 	return ins, nil
 }
 
-func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response) {
+func (c Config) Maker(request <-chan pool2.Request, response chan<- pool2.Response) {
 	stop := false
 	defer func() {
 		if stop {
-			response <- pool.Response{
+			response <- pool2.Response{
 				Total: 0,
 				InUse: 0,
-				Error: pool.StopSignal(nil),
+				Error: pool2.StopSignal(nil),
 			}
 		}
 	}()
@@ -67,20 +67,20 @@ func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response
 				stop = true
 				return
 			}
-			if r.Type != pool.Types(1) {
-				response <- pool.Response{
+			if r.Type != pool2.Types(1) {
+				response <- pool2.Response{
 					Total: 0,
 					InUse: 0,
-					Error: pool.ConnectionTypeNotAcceptable(nil),
+					Error: pool2.ConnectionTypeNotAcceptable(nil),
 				}
 				continue
 			}
 
 			switch {
 			case r.Count == 0:
-				response <- pool.Response{
+				response <- pool2.Response{
 					Total: uint(len(connections)),
-					InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
+					InUse: uint(len(lo.PickBy(connections, func(key string, value pool2.Connection) bool {
 						return value.InUse == true
 					}))),
 					Error: nil,
@@ -88,19 +88,19 @@ func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response
 				continue
 			case r.Count > 0:
 				if len(connections) > int(r.Count) {
-					response <- pool.Response{
+					response <- pool2.Response{
 						Total: r.Count,
-						InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
+						InUse: uint(len(lo.PickBy(connections, func(key string, value pool2.Connection) bool {
 							return value.InUse == true
 						}))),
-						Error: pool.MaximumConnection(nil),
+						Error: pool2.MaximumConnection(nil),
 					}
 					break
 				}
 				for range int(r.Count) - len(connections) {
 					m, err := newConnection(c.db)
 					if err != nil {
-						response <- pool.Response{
+						response <- pool2.Response{
 							Total: uint(len(connections)),
 							InUse: uint(0),
 							Error: err,
@@ -110,9 +110,9 @@ func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response
 					connections = merge(connections, m)
 				}
 			}
-			response <- pool.Response{
+			response <- pool2.Response{
 				Total: uint(len(connections)),
-				InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
+				InUse: uint(len(lo.PickBy(connections, func(key string, value pool2.Connection) bool {
 					return value.InUse == true
 				}))),
 				Error: nil,
@@ -123,30 +123,30 @@ func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response
 	}
 }
 
-func (c Config) Manager(cmd <-chan pool.ManageRequest, conn chan<- *pool.Connection) {
+func (c Config) Manager(cmd <-chan pool2.ManageRequest, conn chan<- *pool2.Connection) {
 	for {
 		select {
 		case command := <-cmd:
 			switch command.Command {
-			case pool.Commands(0):
-				conn <- &pool.Connection{
+			case pool2.Commands(0):
+				conn <- &pool2.Connection{
 					Id:    uuid.UUID{},
 					Cnn:   nil,
 					InUse: false,
-					Err:   pool.CommandNotExist(nil),
+					Err:   pool2.CommandNotExist(nil),
 				}
-			case pool.Commands(1):
+			case pool2.Commands(1):
 				c.m.Lock()
 				stop := time.After(waitForFreeCnn)
 				for {
 					select {
 					case <-stop:
 						c.m.Unlock()
-						conn <- &pool.Connection{
+						conn <- &pool2.Connection{
 							Id:    uuid.UUID{},
 							Cnn:   nil,
 							InUse: false,
-							Err:   pool.FreeConnectionNotExist(nil),
+							Err:   pool2.FreeConnectionNotExist(nil),
 						}
 					default:
 						for _, cn := range connections {
@@ -159,19 +159,19 @@ func (c Config) Manager(cmd <-chan pool.ManageRequest, conn chan<- *pool.Connect
 						}
 					}
 				}
-			case pool.Commands(2):
+			case pool2.Commands(2):
 				cn, ok := connections[command.ID.String()]
 				if !ok {
-					conn <- &pool.Connection{
+					conn <- &pool2.Connection{
 						Id:    uuid.UUID{},
 						Cnn:   nil,
 						InUse: false,
-						Err:   pool.DbCnnNotExist(nil),
+						Err:   pool2.DbCnnNotExist(nil),
 					}
 					continue
 				}
 				cn.InUse = false
-				conn <- &pool.Connection{
+				conn <- &pool2.Connection{
 					Id:    uuid.UUID{},
 					Cnn:   nil,
 					InUse: false,
@@ -216,7 +216,7 @@ func (c Config) Refresh(s chan struct{}, e chan *customModelError.XError) {
 	}
 }
 
-func (c Config) Release(request chan pool.ReleaseRequest, e chan *customModelError.XError) {
+func (c Config) Release(request chan pool2.ReleaseRequest, e chan *customModelError.XError) {
 	for {
 		select {
 		case r := <-request:
@@ -226,7 +226,7 @@ func (c Config) Release(request chan pool.ReleaseRequest, e chan *customModelErr
 			}
 			connection, ok := connections[r.ID.String()]
 			if !ok {
-				e <- pool.DbCnnNotExist(nil)
+				e <- pool2.DbCnnNotExist(nil)
 				continue
 			}
 			c.m.Lock()
@@ -244,7 +244,7 @@ func (c Config) ReleaseAll(byForce bool) *customModelError.XError {
 	defer c.m.Unlock()
 	for _, connection := range connections {
 		if !byForce && connection.InUse {
-			return pool.ConnectionInUse(nil)
+			return pool2.ConnectionInUse(nil)
 		}
 		_ = connection.Cnn.(*sql.DB).Close()
 		connection.Cnn = nil
@@ -252,23 +252,23 @@ func (c Config) ReleaseAll(byForce bool) *customModelError.XError {
 	return nil
 }
 
-func newConnection(d model.DB) (m map[string]pool.Connection, e *customModelError.XError) {
-	m = make(map[string]pool.Connection)
+func newConnection(d loader.DB) (m map[string]pool2.Connection, e *customModelError.XError) {
+	m = make(map[string]pool2.Connection)
 	cnn, err := sql.Open(d.Driver, fmt.Sprintf(psql, d.Host, d.Port, d.UserName, d.Password, d.DbName, d.SSLMode))
 	if err != nil {
-		e = pool.DbConnectionFailed(customModelError.RunTimeError(err))
+		e = pool2.DbConnectionFailed(customModelError.RunTimeError(err))
 		return nil, e
 	}
 	key := uuid.New()
-	m[key.String()] = pool.Connection{
+	m[key.String()] = pool2.Connection{
 		Id:    key,
 		Cnn:   cnn,
 		InUse: false,
 	}
 	return m, nil
 }
-func merge(dictionaries ...map[string]pool.Connection) map[string]pool.Connection {
-	res := make(map[string]pool.Connection)
+func merge(dictionaries ...map[string]pool2.Connection) map[string]pool2.Connection {
+	res := make(map[string]pool2.Connection)
 	for _, di := range dictionaries {
 		for k, v := range di {
 			res[k] = v

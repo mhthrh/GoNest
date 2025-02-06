@@ -2,7 +2,6 @@ package file
 
 import (
 	"github.com/mhthrh/common-lib/model/test"
-	customeError "github.com/mhthrh/common-lib/pkg/util/file"
 	"testing"
 )
 
@@ -14,7 +13,7 @@ func TestInitialize(t *testing.T) {
 			Input:    []string{"", ""},
 			OutPut:   nil,
 			HasError: true,
-			Err:      customeError.FileParameter(nil),
+			Err:      FileParameter(nil),
 		}, {
 			Name:     "TestInitial-1",
 			Input:    []string{"common-lib/config/file", "config-test.json"},

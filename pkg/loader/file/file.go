@@ -2,9 +2,8 @@ package file
 
 import (
 	"encoding/json"
-	"github.com/mhthrh/common-lib/config/loader"
 	customModelError "github.com/mhthrh/common-lib/model/error"
-	customError "github.com/mhthrh/common-lib/pkg/util/file"
+	"github.com/mhthrh/common-lib/model/loader"
 	textFile "github.com/mhthrh/common-lib/pkg/util/file/text"
 )
 
@@ -26,11 +25,11 @@ func (f FileConfig) Initialize() (*loader.Config, *customModelError.XError) {
 
 	b, err := text.Read()
 	if err != nil {
-		return nil, customError.FileInitializerError(customModelError.RunTimeError(err))
+		return nil, FileInitializerError(customModelError.RunTimeError(err))
 	}
 	err = json.Unmarshal(b, &config)
 	if err != nil {
-		return nil, customError.FileInitializerError(customModelError.RunTimeError(err))
+		return nil, FileInitializerError(customModelError.RunTimeError(err))
 	}
 	return &config, nil
 }

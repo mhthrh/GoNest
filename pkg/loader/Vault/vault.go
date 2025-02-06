@@ -1,6 +1,8 @@
 package Vault
 
-import "github.com/mhthrh/common-lib/config/loader"
+import (
+	"github.com/mhthrh/common-lib/model/loader"
+)
 
 type VaultConfig struct {
 }
