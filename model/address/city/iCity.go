@@ -10,7 +10,7 @@ type ICity interface {
 	Cities() ([]City, *cErrModel.XError)
 	GetByCountry(country string) ([]City, *cErrModel.XError)
 	GetByCity(city string) ([]City, *cErrModel.XError)
-	GetByCityAndCountry(city string, country string) (City, *cErrModel.XError)
+	GetByCityAndCountry(city string, country string) (*City, *cErrModel.XError)
 }
 type City struct {
 	ID          uuid.UUID `json:"id"`
