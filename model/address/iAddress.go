@@ -1,8 +1,8 @@
 package address
 
 import (
-	"github.com/mhthrh/common-lib/model/city"
-	"github.com/mhthrh/common-lib/model/country"
+	"github.com/mhthrh/GoNest/model/city"
+	"github.com/mhthrh/GoNest/model/country"
 )
 
 type IAddress interface {

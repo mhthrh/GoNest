@@ -1,7 +1,7 @@
 package Vault
 
 import (
-	"github.com/mhthrh/common-lib/model/loader"
+	"github.com/mhthrh/GoNest/model/loader"
 )
 
 type VaultConfig struct {

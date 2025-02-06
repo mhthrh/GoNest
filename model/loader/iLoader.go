@@ -1,7 +1,7 @@
 package loader
 
 import (
-	customModelError "github.com/mhthrh/common-lib/model/error"
+	customModelError "github.com/mhthrh/GoNest/model/error"
 )
 
 type Config struct {

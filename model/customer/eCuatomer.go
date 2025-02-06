@@ -1,7 +1,7 @@
 package customer
 
 import (
-	cError "github.com/mhthrh/common-lib/model/error"
+	cError "github.com/mhthrh/GoNest/model/error"
 	"time"
 )
 

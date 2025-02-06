@@ -2,8 +2,8 @@ package customer
 
 import (
 	"github.com/google/uuid"
-	"github.com/mhthrh/common-lib/model/address"
-	cError "github.com/mhthrh/common-lib/model/error"
+	"github.com/mhthrh/GoNest/model/address"
+	cError "github.com/mhthrh/GoNest/model/error"
 	"time"
 )
 

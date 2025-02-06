@@ -1,7 +1,7 @@
 package test
 
 import (
-	error2 "github.com/mhthrh/common-lib/model/error"
+	error2 "github.com/mhthrh/GoNest/model/error"
 )
 
 type Test struct {

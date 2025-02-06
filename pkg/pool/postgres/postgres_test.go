@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
-	customModelError "github.com/mhthrh/common-lib/model/error"
-	l "github.com/mhthrh/common-lib/model/loader"
-	pool2 "github.com/mhthrh/common-lib/model/pool"
-	"github.com/mhthrh/common-lib/model/test"
-	"github.com/mhthrh/common-lib/pkg/loader/file"
+	customModelError "github.com/mhthrh/GoNest/model/error"
+	l "github.com/mhthrh/GoNest/model/loader"
+	pool2 "github.com/mhthrh/GoNest/model/pool"
+	"github.com/mhthrh/GoNest/model/test"
+	"github.com/mhthrh/GoNest/pkg/loader/file"
 	"testing"
 )
 

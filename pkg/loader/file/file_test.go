@@ -1,7 +1,7 @@
 package file
 
 import (
-	"github.com/mhthrh/common-lib/model/test"
+	"github.com/mhthrh/GoNest/model/test"
 	"testing"
 )
 
