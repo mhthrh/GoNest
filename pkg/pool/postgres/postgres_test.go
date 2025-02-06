@@ -7,8 +7,7 @@ import (
 	l "github.com/mhthrh/common-lib/config/loader"
 	"github.com/mhthrh/common-lib/config/loader/file"
 	"github.com/mhthrh/common-lib/config/model"
-	customModelError "github.com/mhthrh/common-lib/errors"
-	customeError "github.com/mhthrh/common-lib/errors/pool"
+	customModelError "github.com/mhthrh/common-lib/model/error"
 	"github.com/mhthrh/common-lib/model/test"
 	"github.com/mhthrh/common-lib/pkg/pool"
 	"testing"
@@ -33,7 +32,7 @@ func TestNew(t *testing.T) {
 			Input:    c1.DataBase,
 			OutPut:   nil,
 			HasError: true,
-			Err:      customeError.InputParamsMismatch(nil),
+			Err:      pool.InputParamsMismatch(nil),
 		}, {
 			Name:     "test-2",
 			Input:    c.DataBase,
@@ -100,7 +99,7 @@ func TestMaker(t *testing.T) {
 				if r.Error == nil {
 					t.Error(fmt.Errorf("expected no error but got %v", r.Error))
 				}
-				if r.Error.Code != customeError.ConnectionTypeNotAcceptable(nil).Code {
+				if r.Error.Code != pool.ConnectionTypeNotAcceptable(nil).Code {
 					t.Errorf("expected stop signal but got %v", r.Error)
 				}
 			case 1:
@@ -114,7 +113,7 @@ func TestMaker(t *testing.T) {
 				if r.Error == nil {
 					t.Error(fmt.Errorf("expercted %v got no error", r.Error))
 				}
-				if r.Error.Code != customeError.StopSignal(nil).Code {
+				if r.Error.Code != pool.StopSignal(nil).Code {
 					t.Errorf("expected stop signal but got %v", r.Error)
 				}
 			}
@@ -175,8 +174,8 @@ func TestManager(t *testing.T) {
 			if r.Err == nil {
 				t.Error(fmt.Errorf("expected error but got nil"))
 			}
-			if r.Err.Code != customeError.CommandNotExist(nil).Code {
-				t.Errorf("expected %v but got %v", customeError.CommandNotExist(nil), r.Err)
+			if r.Err.Code != pool.CommandNotExist(nil).Code {
+				t.Errorf("expected %v but got %v", pool.CommandNotExist(nil), r.Err)
 			}
 		case 1:
 			if r.Err != nil {
@@ -187,8 +186,8 @@ func TestManager(t *testing.T) {
 			}
 			id = r.Id
 		case 2:
-			if r.Err.Code != customeError.DbCnnNotExist(nil).Code {
-				t.Error(fmt.Errorf("expected %v but got %v", customeError.DbCnnNotExist(nil), r.Err))
+			if r.Err.Code != pool.DbCnnNotExist(nil).Code {
+				t.Error(fmt.Errorf("expected %v but got %v", pool.DbCnnNotExist(nil), r.Err))
 			}
 		case 3:
 			if r.Err.Code != customModelError.Success().Code {
@@ -287,7 +286,7 @@ func TestRelease(t *testing.T) {
 		switch i {
 		case 0:
 			if r == nil {
-				t.Error(fmt.Errorf("expected %v but got nil", customeError.DbCnnNotExist(nil)))
+				t.Error(fmt.Errorf("expected %v but got nil", pool.DbCnnNotExist(nil)))
 			}
 		case 1:
 			if r.Code != customModelError.Success().Code {

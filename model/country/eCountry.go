@@ -2,12 +2,12 @@ package country
 
 import (
 	"fmt"
-	"github.com/mhthrh/common-lib/errors"
+	error2 "github.com/mhthrh/common-lib/model/error"
 	"time"
 )
 
-func FileUnreachable(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func FileUnreachable(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "CNTRY100100",
 		Type:          "Country Error",
 		Message:       "internal error",
@@ -16,8 +16,8 @@ func FileUnreachable(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func FileEmpty(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func FileEmpty(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "CNTRY100101",
 		Type:          "Country Error",
 		Message:       "internal error",
@@ -26,8 +26,8 @@ func FileEmpty(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func NotLoaded(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func NotLoaded(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "CNTRY100102",
 		Type:          "Country Error",
 		Message:       "country not loaded",
@@ -36,8 +36,8 @@ func NotLoaded(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func NotFound(e *errors.XError, country string) *errors.XError {
-	return &errors.XError{
+func NotFound(e *error2.XError, country string) *error2.XError {
+	return &error2.XError{
 		Code:          "CNTRY100102",
 		Type:          "Country Error",
 		Message:       "country not found",

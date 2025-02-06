@@ -1,8 +1,8 @@
 package file
 
 import (
-	customeError "github.com/mhthrh/common-lib/errors/config"
 	"github.com/mhthrh/common-lib/model/test"
+	customeError "github.com/mhthrh/common-lib/pkg/util/file"
 	"testing"
 )
 

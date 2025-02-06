@@ -6,8 +6,7 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/mhthrh/common-lib/config/model"
-	customModelError "github.com/mhthrh/common-lib/errors"
-	customError "github.com/mhthrh/common-lib/errors/pool"
+	customModelError "github.com/mhthrh/common-lib/model/error"
 	"github.com/mhthrh/common-lib/pkg/pool"
 	"github.com/samber/lo"
 	"strings"
@@ -37,7 +36,7 @@ func init() {
 
 func New(db model.DB) (pool.IConnection, *customModelError.XError) {
 	if strings.Trim(db.Host, " ") == "" {
-		return nil, customError.InputParamsMismatch(nil)
+		return nil, pool.InputParamsMismatch(nil)
 	}
 	once.Do(func() {
 		ins = Config{
@@ -55,7 +54,7 @@ func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response
 			response <- pool.Response{
 				Total: 0,
 				InUse: 0,
-				Error: customError.StopSignal(nil),
+				Error: pool.StopSignal(nil),
 			}
 		}
 	}()
@@ -72,7 +71,7 @@ func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response
 				response <- pool.Response{
 					Total: 0,
 					InUse: 0,
-					Error: customError.ConnectionTypeNotAcceptable(nil),
+					Error: pool.ConnectionTypeNotAcceptable(nil),
 				}
 				continue
 			}
@@ -94,7 +93,7 @@ func (c Config) Maker(request <-chan pool.Request, response chan<- pool.Response
 						InUse: uint(len(lo.PickBy(connections, func(key string, value pool.Connection) bool {
 							return value.InUse == true
 						}))),
-						Error: customError.MaximumConnection(nil),
+						Error: pool.MaximumConnection(nil),
 					}
 					break
 				}
@@ -134,7 +133,7 @@ func (c Config) Manager(cmd <-chan pool.ManageRequest, conn chan<- *pool.Connect
 					Id:    uuid.UUID{},
 					Cnn:   nil,
 					InUse: false,
-					Err:   customError.CommandNotExist(nil),
+					Err:   pool.CommandNotExist(nil),
 				}
 			case pool.Commands(1):
 				c.m.Lock()
@@ -147,7 +146,7 @@ func (c Config) Manager(cmd <-chan pool.ManageRequest, conn chan<- *pool.Connect
 							Id:    uuid.UUID{},
 							Cnn:   nil,
 							InUse: false,
-							Err:   customError.FreeConnectionNotExist(nil),
+							Err:   pool.FreeConnectionNotExist(nil),
 						}
 					default:
 						for _, cn := range connections {
@@ -167,7 +166,7 @@ func (c Config) Manager(cmd <-chan pool.ManageRequest, conn chan<- *pool.Connect
 						Id:    uuid.UUID{},
 						Cnn:   nil,
 						InUse: false,
-						Err:   customError.DbCnnNotExist(nil),
+						Err:   pool.DbCnnNotExist(nil),
 					}
 					continue
 				}
@@ -227,7 +226,7 @@ func (c Config) Release(request chan pool.ReleaseRequest, e chan *customModelErr
 			}
 			connection, ok := connections[r.ID.String()]
 			if !ok {
-				e <- customError.DbCnnNotExist(nil)
+				e <- pool.DbCnnNotExist(nil)
 				continue
 			}
 			c.m.Lock()
@@ -245,7 +244,7 @@ func (c Config) ReleaseAll(byForce bool) *customModelError.XError {
 	defer c.m.Unlock()
 	for _, connection := range connections {
 		if !byForce && connection.InUse {
-			return customError.ConnectionInUse(nil)
+			return pool.ConnectionInUse(nil)
 		}
 		_ = connection.Cnn.(*sql.DB).Close()
 		connection.Cnn = nil
@@ -257,7 +256,7 @@ func newConnection(d model.DB) (m map[string]pool.Connection, e *customModelErro
 	m = make(map[string]pool.Connection)
 	cnn, err := sql.Open(d.Driver, fmt.Sprintf(psql, d.Host, d.Port, d.UserName, d.Password, d.DbName, d.SSLMode))
 	if err != nil {
-		e = customError.DbConnectionFailed(customModelError.RunTimeError(err))
+		e = pool.DbConnectionFailed(customModelError.RunTimeError(err))
 		return nil, e
 	}
 	key := uuid.New()

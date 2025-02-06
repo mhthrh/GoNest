@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/mhthrh/common-lib/errors"
+	error2 "github.com/mhthrh/common-lib/model/error"
 )
 
 type Test struct {
@@ -9,5 +9,5 @@ type Test struct {
 	Input    any
 	OutPut   any
 	HasError bool
-	Err      *errors.XError
+	Err      *error2.XError
 }

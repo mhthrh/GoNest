@@ -1,12 +1,12 @@
 package pool
 
 import (
-	"github.com/mhthrh/common-lib/errors"
+	error2 "github.com/mhthrh/common-lib/model/error"
 	"time"
 )
 
-func DatabaseUnreachable(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func DatabaseUnreachable(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100100",
 		Type:          "dataBase Error",
 		Message:       "Host is not reachable",
@@ -15,8 +15,8 @@ func DatabaseUnreachable(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func DbCnnNotExist(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func DbCnnNotExist(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100101",
 		Type:          "dataBase Error",
 		Message:       "connection not exist",
@@ -25,8 +25,8 @@ func DbCnnNotExist(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func DbConnectionFailed(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func DbConnectionFailed(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100102",
 		Type:          "dataBase Error",
 		Message:       "failed to connect to database",
@@ -35,8 +35,8 @@ func DbConnectionFailed(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func ConnectionInUse(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func ConnectionInUse(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100103",
 		Type:          "dataBase Error",
 		Message:       "connection already in use",
@@ -46,8 +46,8 @@ func ConnectionInUse(e *errors.XError) *errors.XError {
 	}
 }
 
-func ReleaseAllError(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func ReleaseAllError(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100104",
 		Type:          "dataBase Error",
 		Message:       "cannot release all connection in certain state",
@@ -56,8 +56,8 @@ func ReleaseAllError(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func InputParamsMismatch(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func InputParamsMismatch(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100105",
 		Type:          "Pool Error",
 		Message:       "input params mismatch",
@@ -66,8 +66,8 @@ func InputParamsMismatch(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func InputParamsTypeMismatch(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func InputParamsTypeMismatch(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100106",
 		Type:          "Pool Error",
 		Message:       "input params type mismatch",
@@ -76,8 +76,8 @@ func InputParamsTypeMismatch(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func MaximumConnection(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func MaximumConnection(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100107",
 		Type:          "Pool Error",
 		Message:       "maximum connection exceeded",
@@ -86,8 +86,8 @@ func MaximumConnection(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func ConnectionTypeNotAcceptable(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func ConnectionTypeNotAcceptable(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100108",
 		Type:          "Pool Error",
 		Message:       "connection type not acceptable",
@@ -96,8 +96,8 @@ func ConnectionTypeNotAcceptable(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func StopSignal(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func StopSignal(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB100109",
 		Type:          "Pool Error",
 		Message:       "stop signal detected",
@@ -106,8 +106,8 @@ func StopSignal(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func FreeConnectionNotExist(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func FreeConnectionNotExist(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB1001010",
 		Type:          "Pool Error",
 		Message:       "free connection not exist",
@@ -116,8 +116,8 @@ func FreeConnectionNotExist(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func CommandNotExist(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func CommandNotExist(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "DB1001011",
 		Type:          "Pool Error",
 		Message:       "command not exist",

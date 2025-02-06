@@ -2,7 +2,7 @@ package loader
 
 import (
 	"github.com/mhthrh/common-lib/config/model"
-	customModelError "github.com/mhthrh/common-lib/errors"
+	customModelError "github.com/mhthrh/common-lib/model/error"
 )
 
 type Config struct {

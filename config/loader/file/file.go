@@ -3,8 +3,8 @@ package file
 import (
 	"encoding/json"
 	"github.com/mhthrh/common-lib/config/loader"
-	customModelError "github.com/mhthrh/common-lib/errors"
-	customError "github.com/mhthrh/common-lib/errors/config"
+	customModelError "github.com/mhthrh/common-lib/model/error"
+	customError "github.com/mhthrh/common-lib/pkg/util/file"
 	textFile "github.com/mhthrh/common-lib/pkg/util/file/text"
 )
 

@@ -1,12 +1,12 @@
-package config
+package file
 
 import (
-	"github.com/mhthrh/common-lib/errors"
+	error2 "github.com/mhthrh/common-lib/model/error"
 	"time"
 )
 
-func FileParameter(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func FileParameter(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "CONFIG100100",
 		Type:          "config Error",
 		Message:       "config file parameter error",
@@ -15,8 +15,8 @@ func FileParameter(e *errors.XError) *errors.XError {
 		Time:          time.Now().String(),
 	}
 }
-func FileInitializerError(e *errors.XError) *errors.XError {
-	return &errors.XError{
+func FileInitializerError(e *error2.XError) *error2.XError {
+	return &error2.XError{
 		Code:          "CONFIG100101",
 		Type:          "config Error",
 		Message:       "cannot initialize file parameter",

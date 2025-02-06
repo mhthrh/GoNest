@@ -1,7 +1,7 @@
 package country
 
 import (
-	cErrModel "github.com/mhthrh/common-lib/errors"
+	cErrModel "github.com/mhthrh/common-lib/model/error"
 )
 
 type ICountry interface {

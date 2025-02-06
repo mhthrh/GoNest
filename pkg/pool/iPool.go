@@ -2,7 +2,7 @@ package pool
 
 import (
 	"github.com/google/uuid"
-	customModelError "github.com/mhthrh/common-lib/errors"
+	customModelError "github.com/mhthrh/common-lib/model/error"
 )
 
 type IConnection interface {
