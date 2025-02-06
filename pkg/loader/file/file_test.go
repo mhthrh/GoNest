@@ -6,7 +6,7 @@ import (
 )
 
 func TestInitialize(t *testing.T) {
-	c := New("common-lib/config/file", "config-test.json")
+	c := New("GoNest/config/file", "config-test.json")
 	tests := []test.Test{
 		{
 			Name:     "TestInitial-0",
@@ -16,7 +16,7 @@ func TestInitialize(t *testing.T) {
 			Err:      FileParameter(nil),
 		}, {
 			Name:     "TestInitial-1",
-			Input:    []string{"common-lib/config/file", "config-test.json"},
+			Input:    []string{"GoNest/config/file", "config-test.json"},
 			OutPut:   nil,
 			HasError: false,
 			Err:      nil,

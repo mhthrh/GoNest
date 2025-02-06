@@ -9,13 +9,13 @@ A reusable Go library for common utilities and helper functions.
 
 ## Installation
 ```sh
-go get github.com/mhthrh/common-lib
+go get github.com/mhthrh/GoNest
 ```
 
 ## Usage
 Import the library in your Go project:
 ```go
-import "github.com/mhthrh/common-lib"
+import "github.com/mhthrh/GoNest"
 ```
 
 Example usage:

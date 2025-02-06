@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	appMainDir = "common-lib"
+	appMainDir = "GoNest"
 	appRootDir = "A3PATH"
 )
 
