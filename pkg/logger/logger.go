@@ -13,64 +13,68 @@ import (
 )
 
 type Message struct {
-	time    time.Time
-	logType Types
-	Key     string
-	Value   []interface{}
+	Time    time.Time `json:"time"`
+	LogType Types     `json:"type"`
+	Key     string    `json:"key"`
+	Value   []string  `json:"value"`
 }
 type Detail struct {
-	methodName string
-	start      time.Time
-	end        time.Time
-	Messages   []Message
+	MethodName string    `json:"method_name,omitempty"`
+	Start      time.Time `json:"start"`
+	End        time.Time `json:"end"`
+	Messages   []Message `json:"messages" json:"messages,omitempty"`
 }
 type Log struct {
-	id            uuid.UUID
-	transactionId string
-	timeStart     time.Time
-	timeEnd       time.Time
-	serviceName   string
-	details       []Detail
+	ID            uuid.UUID `json:"id"`
+	TransactionId string    `json:"transactionId"`
+	TimeStart     time.Time `json:"timeStart"`
+	TimeEnd       time.Time `json:"timeEnd"`
+	ServiceName   string
+	Details       []Detail `json:"details"`
 }
 
 func Initialize(transactionId string) Log {
 	return Log{
-		id:            uuid.New(),
-		transactionId: transactionId,
-		timeStart:     time.Now(),
-		serviceName:   "",
-		details:       nil,
+		ID:            uuid.New(),
+		TransactionId: transactionId,
+		TimeEnd:       time.Now(),
+		ServiceName:   "",
+		Details:       nil,
 	}
 }
 func (l *Log) Start() {
-	if l.details != nil {
-		l.details[len(l.details)-1].end = time.Now()
+	if l.Details != nil {
+		l.Details[len(l.Details)-1].End = time.Now()
 	}
 	pc, _, _, _ := runtime.Caller(1)
 	detail := Detail{
-		methodName: runtime.FuncForPC(pc).Name(),
-		start:      time.Now(),
-		end:        time.Time{},
+		MethodName: runtime.FuncForPC(pc).Name(),
+		Start:      time.Now(),
+		End:        time.Time{},
 		Messages:   nil,
 	}
-	l.details = append(l.details, detail)
+	l.Details = append(l.Details, detail)
 }
 
 func (l *Log) Add(msg string, lType Types, values ...interface{}) {
-	var r []interface{}
+	var r []string
 	for _, value := range values {
-		r = append(r, value)
+		str := convert(value)
+		r = append(r, str)
 	}
 	message := Message{
-		time:    time.Now(),
-		logType: lType,
+		Time:    time.Now(),
+		LogType: lType,
 		Key:     msg,
 		Value:   r,
 	}
-	l.details[len(l.details)-1].Messages = append(l.details[len(l.details)-1].Messages, message)
+	l.Details[len(l.Details)-1].Messages = append(l.Details[len(l.Details)-1].Messages, message)
 }
 func (l *Log) Done() {
-	l.timeEnd = time.Now()
+	if l.Details != nil {
+		l.Details[len(l.Details)-1].End = time.Now()
+	}
+	l.TimeStart = time.Now()
 }
 
 func (l *Log) Export() string {
@@ -82,7 +86,7 @@ func (l *Log) Export() string {
 	return string(jsonByte)
 }
 
-func conv(i interface{}) string {
+func convert(i interface{}) string {
 	switch i.(type) {
 	case string:
 		return i.(string)
