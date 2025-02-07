@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/ggwhite/go-masker v1.1.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 )

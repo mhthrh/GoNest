@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"github.com/mhthrh/GoNest/model/address"
 	cError "github.com/mhthrh/GoNest/model/error"
@@ -8,13 +9,13 @@ import (
 )
 
 type ICustomer interface {
-	RegisterCustomer(address address.Address, customer Customer) *cError.XError
-	GetCustomerById(id string) (*Customer, bool)
-	GetCustomerByName(name string) (*Customer, bool)
-	GetCustomerByEmail(email string) (*Customer, bool)
-	GetCustomerByPhone(phone string) (*Customer, bool)
-	ChangeStatus(id string, status Status) *cError.XError
-	EditCustomer(address address.Address, customer Customer) *cError.XError
+	RegisterCustomer(ctx context.Context, address address.Address, customer Customer) *cError.XError
+	GetCustomerById(ctx context.Context, id string) (*Customer, bool)
+	GetCustomerByName(ctx context.Context, name string) (*Customer, bool)
+	GetCustomerByEmail(ctx context.Context, email string) (*Customer, bool)
+	GetCustomerByPhone(ctx context.Context, phone string) (*Customer, bool)
+	ChangeStatus(ctx context.Context, id string, status Status) *cError.XError
+	EditCustomer(ctx context.Context, address address.Address, customer Customer) *cError.XError
 }
 type Customer struct {
 	ID         uuid.UUID       `json:"id"`
