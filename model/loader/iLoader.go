@@ -1,7 +1,7 @@
 package loader
 
 import (
-	customModelError "github.com/mhthrh/GoNest/model/error"
+	cMerror "github.com/mhthrh/GoNest/model/error"
 )
 
 type Config struct {
@@ -11,8 +11,8 @@ type Config struct {
 }
 
 type IConfig interface {
-	Initialize() (*Config, *customModelError.XError)
-	PrintConfig() *customModelError.XError
+	Initialize() (*Config, *cMerror.XError)
+	PrintConfig() *cMerror.XError
 }
 
 type MetaData struct {
