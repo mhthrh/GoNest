@@ -10,10 +10,10 @@ import (
 
 type ICustomer interface {
 	RegisterCustomer(ctx context.Context, address address.Address, customer Customer) *cError.XError
-	GetCustomerById(ctx context.Context, id string) (*Customer, bool)
-	GetCustomerByName(ctx context.Context, name string) (*Customer, bool)
-	GetCustomerByEmail(ctx context.Context, email string) (*Customer, bool)
-	GetCustomerByPhone(ctx context.Context, phone string) (*Customer, bool)
+	GetCustomerById(ctx context.Context, id string) (*Customer, *cError.XError)
+	GetCustomerByName(ctx context.Context, name string) (*Customer, *cError.XError)
+	GetCustomerByEmail(ctx context.Context, email string) (*Customer, *cError.XError)
+	GetCustomerByPhone(ctx context.Context, phone string) (*Customer, *cError.XError)
 	ChangeStatus(ctx context.Context, id string, status Status) *cError.XError
 	EditCustomer(ctx context.Context, address address.Address, customer Customer) *cError.XError
 }
