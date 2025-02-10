@@ -126,3 +126,23 @@ func CommandNotExist(e *cError.XError) *cError.XError {
 		Time:          time.Now().String(),
 	}
 }
+func TimeOut(e *cError.XError) *cError.XError {
+	return &cError.XError{
+		Code:          "DB1001012",
+		Type:          cError.Types(9),
+		Message:       "timeout exceeded",
+		Details:       "timeout exceeded",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
+func TerminateByMain(e *cError.XError) *cError.XError {
+	return &cError.XError{
+		Code:          "DB1001013",
+		Type:          cError.Types(9),
+		Message:       "terminate by main",
+		Details:       "terminate by main",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}

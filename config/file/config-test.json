@@ -16,6 +16,8 @@
     "user": "test",
     "password": "S3Tring@123",
     "dbname": "db_test",
-    "driver": "postgres"
+    "driver": "postgres",
+    "poolSize": 50,
+    "refreshTime": 60
   }
 }

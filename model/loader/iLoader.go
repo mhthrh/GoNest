@@ -26,11 +26,13 @@ type Secret struct {
 	TokenDuration string `json:"tokenDuration"`
 }
 type DB struct {
-	Host     string  `json:"host"`
-	Port     int     `json:"port"`
-	UserName string  `json:"user"`
-	Password string  `json:"password"`
-	DbName   string  `json:"dbName"`
-	Driver   string  `json:"driver"`
-	SSLMode  SslType `json:"sslMode"`
+	Host        string  `json:"host"`
+	Port        int     `json:"port"`
+	UserName    string  `json:"user"`
+	Password    string  `json:"password"`
+	DbName      string  `json:"dbName"`
+	Driver      string  `json:"driver"`
+	SSLMode     SslType `json:"sslMode"`
+	PoolSize    int     `json:"poolSize"`
+	RefreshTime int     `json:"refreshTime"`
 }
