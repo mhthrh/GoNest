@@ -146,3 +146,13 @@ func TerminateByMain(e *cError.XError) *cError.XError {
 		Time:          time.Now().String(),
 	}
 }
+func SizeUnexpected(e *cError.XError) *cError.XError {
+	return &cError.XError{
+		Code:          "DB1001014",
+		Type:          cError.Types(9),
+		Message:       "pool size exceeded",
+		Details:       "pool size exceeded",
+		InternalError: e,
+		Time:          time.Now().String(),
+	}
+}
