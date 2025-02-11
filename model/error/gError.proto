@@ -1,0 +1,15 @@
+syntax="proto3";
+package error;
+
+import "google/protobuf/timestamp.proto";
+option go_package = "github.com/mhthrh/GoNest/model/error/gError.proto";
+
+
+message Error{
+  string Code=1;
+  int32 Type=2;
+  string Message=3;
+  string Detail=4;
+  Error InternalError=5;
+  google.protobuf.Timestamp Time=6;
+}

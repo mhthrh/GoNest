@@ -22,6 +22,4 @@ message customer{
   int32 Status=13;
   bytes Picture=14;
   bytes Document=15;
-
-
 }
