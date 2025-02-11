@@ -1,0 +1,9 @@
+syntax="proto3";
+
+package ProtoCity;
+option go_package = "github.com/mhthrh/city/grpc/ProtoCity";
+
+message City{
+  string Name=1;
+  string CountryCode=2;
+}

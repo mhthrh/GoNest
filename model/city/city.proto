@@ -1,9 +1,0 @@
-syntax="proto3";
-
-package city;
-option go_package = "gen/city";
-
-message City{
-  string Name=1;
-  string CountryCode=2;
-}
