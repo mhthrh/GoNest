@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package models;
+
+option go_package = "github.com/mhthrh/GoNest/models/gen/models";
+
+message User {
+  string id = 1;
+  string name = 2;
+  int32 age = 3;
+}
