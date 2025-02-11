@@ -1,0 +1,9 @@
+syntax="proto3";
+
+package bank.protobuf;
+option go_package = "github.com/mhthrh/GoNest/model/city";
+
+message City{
+  string Name=1;
+  string CountryCode=2;
+}

@@ -2,7 +2,7 @@ syntax="proto3";
 
 package gAddress;
 
-import "model/city/gCity.proto";
+import "model/city/city.proto";
 import "model/country/gCountry.proto";
 
 option go_package = "github.com/mhthrh/GoZest/model/address/gAddress";
