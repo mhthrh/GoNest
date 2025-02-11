@@ -1,7 +1,7 @@
 syntax="proto3";
 
 package gCity;
-option go_package = "github.com/mhthrh/GoNest/model/city/gCity";
+option go_package = "github.com/mhthrh/GoNest/model/city/gCity.proto";
 
 message City{
   string Name=1;
