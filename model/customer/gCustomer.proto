@@ -1,8 +1,9 @@
 syntax="proto3";
-package customer;
+package gCustomer;
 
 import "google/protobuf/timestamp.proto";
 import "model/address/gAddress.proto";
+option go_package = "github.com/mhthrh/GoNest/model/customer/gCustomer";
 
 
 
@@ -13,7 +14,7 @@ message customer{
   string Password=4;
   string Email=5;
   string Mobile=6;
-  address.Address Address=7;
+  gAddress.Address Address=7;
   string FirstName=8;
   string MiddleName=9;
   string LastName=10;

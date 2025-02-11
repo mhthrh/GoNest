@@ -1,17 +1,17 @@
 syntax="proto3";
 
-package address;
+package gAddress;
 
 import "model/city/gCity.proto";
 import "model/country/gCountry.proto";
 
-option go_package = "github.com/mhthrh/GoZest/model/address.proto";
+option go_package = "github.com/mhthrh/GoZest/model/address/gAddress";
 
 
 message Address{
   string Street=1;
-  city.City City=2;
+  gCity.City City=2;
   string State=3;
   string PostalCode=4;
-  Country.Country Country=5;
+  country.Country Country=5;
 }

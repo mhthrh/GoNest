@@ -1,8 +1,8 @@
 syntax="proto3";
 
-package Country;
+package country;
 
-option go_package = "github.com/mhthrh/GoNest/model/country/gCountry.proto";
+option go_package = "github.com/mhthrh/GoNest/model/country/country";
 
 message Country{
   string Name=1;
