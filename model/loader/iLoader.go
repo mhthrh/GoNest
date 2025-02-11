@@ -8,6 +8,7 @@ type Config struct {
 	MetaData MetaData `json:"metaData"`
 	Secret   Secret   `json:"secret"`
 	DataBase DB       `json:"db"`
+	Grpc     Grpc     `json:"grpc"`
 }
 
 type IConfig interface {
