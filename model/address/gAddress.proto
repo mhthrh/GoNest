@@ -1,0 +1,17 @@
+syntax="proto3";
+
+package address;
+
+import "model/city/gCity.proto";
+import "model/country/gCountry.proto";
+
+option go_package = "github.com/mhthrh/GoZest/model/address.proto";
+
+
+message Address{
+  string Street=1;
+  city.City City=2;
+  string State=3;
+  string PostalCode=4;
+  Country.Country Country=5;
+}

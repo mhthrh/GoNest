@@ -1,0 +1,27 @@
+syntax="proto3";
+package customer;
+
+import "google/protobuf/timestamp.proto";
+import "model/address/gAddress.proto";
+
+
+
+message customer{
+  string CustomerId =1;
+  int32 IdType=2;
+  string UserName=3;
+  string Password=4;
+  string Email=5;
+  string Mobile=6;
+  address.Address Address=7;
+  string FirstName=8;
+  string MiddleName=9;
+  string LastName=10;
+  google.protobuf.Timestamp CreatedAt=11;
+  google.protobuf.Timestamp UpdatedAt=12;
+  int32 Status=13;
+  bytes Picture=14;
+  bytes Document=15;
+
+
+}
