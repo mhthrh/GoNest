@@ -36,3 +36,8 @@ type DB struct {
 	PoolSize    int     `json:"poolSize"`
 	RefreshTime int     `json:"refreshTime"`
 }
+
+type Grpc struct {
+	Ip   string `json:"ip"`
+	Port int    `json:"port"`
+}
