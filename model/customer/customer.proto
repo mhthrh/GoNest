@@ -9,17 +9,17 @@ import "model/address/address.proto";
 import "model/error/error.proto";
 
 service Service{
-  rpc RegisterCustomer(request)returns(response){}
+  rpc RegisterCustomer(Request)returns(Response){}
 }
 
-message request{
-  address.Address address=1;
-  customer customer=2;
+message Request{
+  address.Address Address=1;
+  customer Customer=2;
 }
 
-message response{
-  customer customer=1;
-  error.Error error=2;
+message Response{
+  customer Customer=1;
+  error.Error Error=2;
 
 }
 
