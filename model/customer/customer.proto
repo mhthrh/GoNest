@@ -1,12 +1,29 @@
 syntax="proto3";
 
-package customer;
+
 
 option go_package = "github.com/mhthrh/GoNest/model/customer";
 
 import "google/protobuf/timestamp.proto";
-
 import "model/address/address.proto";
+import "model/error/error.proto";
+
+service Service{
+  rpc RegisterCustomer(request)returns(response){}
+}
+
+message request{
+  address.Address address=1;
+  customer customer=2;
+}
+
+message response{
+  customer customer=1;
+  error.Error error=2;
+
+}
+
+
 
 
 
