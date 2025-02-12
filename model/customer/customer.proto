@@ -24,10 +24,6 @@ message Response{
 }
 
 
-
-
-
-
 message customer{
   string CustomerId =1;
   int32 IdType=2;
