@@ -1,8 +1,9 @@
 syntax="proto3";
+
 package error;
+option go_package = "github.com/mhthrh/GoNest/model/error";
 
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/mhthrh/GoNest/model/error/gError.proto";
 
 
 message Error{
