@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Service_RegisterCustomer_FullMethodName = "/Service/RegisterCustomer"
+	Service_RegisterCustomer_FullMethodName = "/customer.Service/RegisterCustomer"
 )
 
 // ServiceClient is the client API for Service service.
@@ -108,7 +108,7 @@ func _Service_RegisterCustomer_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Service_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Service",
+	ServiceName: "customer.Service",
 	HandlerType: (*ServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

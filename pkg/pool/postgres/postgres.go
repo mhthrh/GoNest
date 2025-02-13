@@ -186,8 +186,8 @@ func (c Config) Manager(cmd <-chan cPool.ManageRequest, conn chan<- *cPool.Conne
 }
 
 func (c Config) Refresh(s chan struct{}, e chan<- cPool.RefreshResponse) {
-	counter := 0
 	for {
+		counter := 0
 		select {
 		case <-s:
 			for id, conn := range connections {
