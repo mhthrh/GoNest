@@ -185,33 +185,27 @@ func (c Config) Manager(cmd <-chan cPool.ManageRequest, conn chan<- *cPool.Conne
 
 }
 
-func (c Config) Refresh(s chan struct{}, e chan *customModelError.XError) {
+func (c Config) Refresh(s chan struct{}, e chan<- cPool.RefreshResponse) {
+	counter := 0
 	for {
 		select {
 		case <-s:
 			for id, conn := range connections {
 				if conn.Cnn == nil {
 					delete(connections, id)
-					con, err := newConnection(c.db)
-					if err != nil {
-						e <- err
-						continue
-					}
-					connections = merge(connections, con)
+					counter++
 				}
 				if conn.Cnn.(*sql.DB).Ping() != nil {
 					_ = conn.Cnn.(*sql.DB).Close()
 					conn.Cnn = nil
 					delete(connections, id)
-					con, err := newConnection(c.db)
-					if err != nil {
-						e <- err
-						continue
-					}
-					connections = merge(connections, con)
+					counter++
 				}
 			}
-			e <- customModelError.Success()
+			e <- cPool.RefreshResponse{
+				KilledCount: uint(counter),
+				TotalCount:  len(connections),
+			}
 		}
 	}
 }
