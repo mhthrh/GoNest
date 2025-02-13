@@ -190,6 +190,7 @@ func (c Config) Refresh(s chan struct{}, e chan<- cPool.RefreshResponse) {
 		counter := 0
 		select {
 		case <-s:
+			c.m.Lock()
 			for id, conn := range connections {
 				if conn.Cnn == nil {
 					delete(connections, id)
@@ -202,6 +203,7 @@ func (c Config) Refresh(s chan struct{}, e chan<- cPool.RefreshResponse) {
 					counter++
 				}
 			}
+			c.m.Unlock()
 			e <- cPool.RefreshResponse{
 				KilledCount: uint(counter),
 				TotalCount:  len(connections),
@@ -249,6 +251,11 @@ func (c Config) ReleaseAll(byForce bool) *customModelError.XError {
 func newConnection(d loader.DB) (m map[string]cPool.Connection, e *customModelError.XError) {
 	m = make(map[string]cPool.Connection)
 	cnn, err := sql.Open(d.Driver, fmt.Sprintf(psql, d.Host, d.Port, d.UserName, d.Password, d.DbName, d.SSLMode))
+	if err != nil {
+		e = cPool.DbConnectionFailed(customModelError.RunTimeError(err))
+		return nil, e
+	}
+	err = cnn.Ping()
 	if err != nil {
 		e = cPool.DbConnectionFailed(customModelError.RunTimeError(err))
 		return nil, e
