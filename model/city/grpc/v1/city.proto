@@ -1,6 +1,12 @@
 syntax="proto3";
-package city;
-option go_package = "github.com/mhthrh/GoNest/model/city";
+
+
+package city.v1;
+
+
+
+
+option go_package = "/city.v1";
 
 message City{
   string Name=1;
