@@ -8,6 +8,7 @@ type Config struct {
 	MetaData MetaData `json:"metaData"`
 	Secret   Secret   `json:"secret"`
 	DataBase DB       `json:"db"`
+	Grpc     Grpc     `json:"grpc"`
 }
 
 type IConfig interface {
@@ -26,11 +27,18 @@ type Secret struct {
 	TokenDuration string `json:"tokenDuration"`
 }
 type DB struct {
-	Host     string  `json:"host"`
-	Port     int     `json:"port"`
-	UserName string  `json:"user"`
-	Password string  `json:"password"`
-	DbName   string  `json:"dbName"`
-	Driver   string  `json:"driver"`
-	SSLMode  SslType `json:"sslMode"`
+	Host        string  `json:"host"`
+	Port        int     `json:"port"`
+	UserName    string  `json:"user"`
+	Password    string  `json:"password"`
+	DbName      string  `json:"dbName"`
+	Driver      string  `json:"driver"`
+	SSLMode     SslType `json:"sslMode"`
+	PoolSize    int     `json:"poolSize"`
+	RefreshTime int     `json:"refreshTime"`
+}
+
+type Grpc struct {
+	Ip   string `json:"ip"`
+	Port int    `json:"port"`
 }

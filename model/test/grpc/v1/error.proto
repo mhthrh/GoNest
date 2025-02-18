@@ -1,0 +1,16 @@
+syntax="proto3";
+
+package error;
+option go_package = "google.golang.org/protobuf/types/gofeaturespb";
+
+import "google/protobuf/timestamp.proto";
+
+
+message Error{
+  string Code=1;
+  int32 Type=2;
+  string Message=3;
+  string Detail=4;
+  Error InternalError=5;
+  google.protobuf.Timestamp Time=6;
+}

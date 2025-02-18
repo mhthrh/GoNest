@@ -200,7 +200,7 @@ func TestManager(t *testing.T) {
 
 func TestRefresh(t *testing.T) {
 	req := make(chan struct{})
-	res := make(chan *cMError.XError)
+	res := make(chan cPool.RefreshResponse)
 	request := make(chan cPool.Request)
 	response := make(chan cPool.Response)
 
@@ -222,8 +222,8 @@ func TestRefresh(t *testing.T) {
 	go p.Refresh(req, res)
 	req <- struct{}{}
 	r := <-res
-	if r.Code != cMError.Success().Code {
-		t.Error(fmt.Errorf("expected %v but got %v", cMError.Success(), r.Code))
+	if r.KilledCount != 0 {
+		t.Error(fmt.Errorf("expected %v but got %v", cMError.Success(), 0))
 	}
 }
 

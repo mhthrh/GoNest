@@ -8,7 +8,7 @@ import (
 type IConnection interface {
 	Maker(<-chan Request, chan<- Response)
 	Manager(<-chan ManageRequest, chan<- *Connection)
-	Refresh(chan struct{}, chan *customModelError.XError)
+	Refresh(chan struct{}, chan<- RefreshResponse)
 	Release(chan ReleaseRequest, chan *customModelError.XError)
 	ReleaseAll(bool) *customModelError.XError
 }
@@ -40,4 +40,9 @@ type ReleaseRequest struct {
 type ManageRequest struct {
 	Command Commands
 	ID      uuid.UUID
+}
+
+type RefreshResponse struct {
+	KilledCount uint
+	TotalCount  int
 }

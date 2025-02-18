@@ -1,0 +1,41 @@
+syntax="proto3";
+
+
+package customer.v1;
+option go_package = "/customer.v1";
+
+import "google/protobuf/timestamp.proto";
+
+message Customer{
+  string CustomerId =1;
+  Type IdType=2;
+  string UserName=3;
+  string Password=4;
+  string Email=5;
+  string Mobile=6;
+  string FirstName=7;
+  string MiddleName=8;
+  string LastName=9;
+  google.protobuf.Timestamp CreatedAt=10;
+  google.protobuf.Timestamp UpdatedAt=11;
+  Status Status=12;
+  bytes Picture=13;
+  bytes Document=14;
+}
+
+
+enum Status{
+  Unknown = 0;
+  Active =1;
+  Inactive=2;
+  Banned=3;
+  Expired=4;
+  Deceased=5;
+}
+
+enum Type{
+  none = 0;
+  Card=1;
+  Passport=2;
+  GovernmentPaper=3;
+}
