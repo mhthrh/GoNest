@@ -4,8 +4,8 @@ package address.v1;
 
 option go_package = "/address.v1";
 
-import "model/city/grpc/v1/city.proto";
-import "model/country/grpc/v1/country.proto";
+import "model/city/grpc/city.v1/city.proto";
+import "model/country/grpc/country.v1/country.proto";
 
 
 

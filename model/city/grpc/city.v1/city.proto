@@ -3,10 +3,7 @@ syntax="proto3";
 
 package city.v1;
 
-
-
-
-option go_package = "/city.v1";
+option go_package = "city.v1";
 
 message City{
   string Name=1;
