@@ -1,0 +1,11 @@
+syntax="proto3";
+
+package country;
+
+option go_package = "github.com/mhthrh/GoNest/model/country/grpc/country";
+
+message Country{
+  string Name=1;
+  string Code=2;
+}
+

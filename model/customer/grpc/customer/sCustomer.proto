@@ -1,0 +1,25 @@
+syntax="proto3";
+
+
+package customer;
+
+option go_package = "github.com/mhthrh/GoNest/model/customer/grpc/customer";
+
+import "model/address/grpc/address/address.proto";
+import "model/customer/grpc/customer/customer.proto";
+
+
+service Service{
+  rpc RegisterCustomer(Request)returns(Response){}
+}
+
+message Request{
+  address.Address Address=1;
+  customer.Customer Customer=2;
+}
+
+message Response{
+  customer.Customer Customer=1;
+
+}
+

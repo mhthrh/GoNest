@@ -9,3 +9,6 @@ bb:
 	protoc --go_out=model/proto/gen/golang \
 	  --go-grpc_out=model/proto/gen/golang \
 	  model/**/grpc/v1/*.proto
+kir:
+	protoc --go_out=. --go_opt=paths=source_relative \
+      model/**/grpc/**/*.proto

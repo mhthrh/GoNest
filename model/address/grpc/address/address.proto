@@ -1,0 +1,18 @@
+syntax="proto3";
+
+package address;
+
+option go_package = "github.com/mhthrh/GoNest/model/address/grpc/address";
+
+import "model/city/grpc/city/city.proto";
+import "model/country/grpc/country/country.proto";
+
+
+
+message Address{
+  string Street=1;
+  city.City City=2;
+  string State=3;
+  string PostalCode=4;
+  country.Country Country=5;
+}
