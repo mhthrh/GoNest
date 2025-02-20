@@ -1,0 +1,25 @@
+syntax="proto3";
+
+
+package customer.v1;
+
+option go_package = "customer-service/pkg/grpc/customer.v1/customer.v1";
+
+import "model/address/grpc/address.v1/address.proto";
+import "model/customer/grpc/customer.v1/customer.proto";
+
+
+service Service{
+  rpc RegisterCustomer(Request)returns(Response){}
+}
+
+message Request{
+  address.v1.Address Address=1;
+  customer.v1.Customer Customer=2;
+}
+
+message Response{
+  customer.v1.Customer Customer=1;
+
+}
+
