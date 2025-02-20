@@ -9,8 +9,10 @@ import "model/address/grpc/address/address.proto";
 import "model/customer/grpc/customer/customer.proto";
 
 
-service Service{
+service CustomerService{
   rpc RegisterCustomer(Request)returns(Response){}
+  rpc GetCustomerById(Id)returns(Response){}
+  rpc GetCustomerByName(Name)returns(Response){}
 }
 
 message Request{
@@ -20,6 +22,10 @@ message Request{
 
 message Response{
   customer.Customer Customer=1;
-
 }
-
+message Id{
+  string ID=1;
+}
+message Name{
+  string Name=1;
+}

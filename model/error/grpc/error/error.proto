@@ -1,9 +1,9 @@
 syntax="proto3";
 
 package error;
-option go_package = "google.golang.org/protobuf/types/gofeaturespb";
 
 import "google/protobuf/timestamp.proto";
+option go_package = "github.com/mhthrh/GoNest/model/error/grpc/error";
 
 
 message Error{
