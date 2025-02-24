@@ -5,10 +5,12 @@ import (
 )
 
 type Config struct {
-	MetaData MetaData `json:"metaData"`
-	Secret   Secret   `json:"secret"`
-	DataBase DB       `json:"db"`
-	Grpc     Grpc     `json:"grpc"`
+	MetaData  MetaData  `json:"metaData"`
+	Secret    Secret    `json:"secret"`
+	DataBase  DB        `json:"db"`
+	Grpc      Grpc      `json:"grpc"`
+	HTTP      HTTP      `json:"http"`
+	WebSocket WebSocket `json:"webSocket"`
 }
 
 type IConfig interface {
@@ -39,6 +41,14 @@ type DB struct {
 }
 
 type Grpc struct {
+	Ip   string `json:"ip"`
+	Port int    `json:"port"`
+}
+type HTTP struct {
+	Ip   string `json:"ip"`
+	Port int    `json:"port"`
+}
+type WebSocket struct {
 	Ip   string `json:"ip"`
 	Port int    `json:"port"`
 }

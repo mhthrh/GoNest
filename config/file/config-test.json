@@ -19,5 +19,17 @@
     "driver": "postgres",
     "poolSize": 50,
     "refreshTime": 60
+  },
+  "grpc": {
+    "ip": "127.0.0.1",
+    "port": 6985
+  },
+  "http": {
+    "IP": "0.0.0.0",
+    "port": 1234
+  },
+  "webSocket": {
+    "IP": "0.0.0.0",
+    "port": 1234
   }
 }
