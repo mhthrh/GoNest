@@ -22,4 +22,5 @@ const (
 	loader
 	address
 	config
+	HTTP
 )

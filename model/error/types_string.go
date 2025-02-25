@@ -25,11 +25,12 @@ func _() {
 	_ = x[loader-14]
 	_ = x[address-15]
 	_ = x[config-16]
+	_ = x[HTTP-17]
 }
 
-const _Types_name = "runTimeSystemgeneralnotImplementednotSupportedreserved1reserved2reserved3reserved4databasecustomercitycountrypoolloaderaddressconfig"
+const _Types_name = "runTimeSystemgeneralnotImplementednotSupportedreserved1reserved2reserved3reserved4databasecustomercitycountrypoolloaderaddressconfigHTTP"
 
-var _Types_index = [...]uint8{0, 7, 13, 20, 34, 46, 55, 64, 73, 82, 90, 98, 102, 109, 113, 119, 126, 132}
+var _Types_index = [...]uint8{0, 7, 13, 20, 34, 46, 55, 64, 73, 82, 90, 98, 102, 109, 113, 119, 126, 132, 136}
 
 func (i Types) String() string {
 	if i < 0 || i >= Types(len(_Types_index)-1) {
