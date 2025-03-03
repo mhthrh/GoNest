@@ -8,7 +8,7 @@ type Config struct {
 	MetaData  MetaData  `json:"metaData"`
 	Secret    Secret    `json:"secret"`
 	DataBase  DB        `json:"db"`
-	Grpc      Grpc      `json:"grpc"`
+	Grpcs     []Grpc    `json:"grpc"`
 	HTTP      HTTP      `json:"http"`
 	WebSocket WebSocket `json:"webSocket"`
 }
@@ -41,8 +41,11 @@ type DB struct {
 }
 
 type Grpc struct {
-	Ip   string `json:"ip"`
-	Port int    `json:"port"`
+	Name        string `json:"name"`
+	Ip          string `json:"ip"`
+	Port        int    `json:"port"`
+	PoolSize    int    `json:"poolSize"`
+	RefreshTime int    `json:"refreshTime"`
 }
 type HTTP struct {
 	Ip   string `json:"ip"`

@@ -20,10 +20,29 @@
     "poolSize": 50,
     "refreshTime": 60
   },
-  "grpc": {
-    "ip": "127.0.0.1",
-    "port": 6985
-  },
+  "grpc": [
+    {
+      "name": "customersvc",
+      "ip": "127.0.0.1",
+      "port": 6985,
+      "poolSize": 10,
+      "refreshTime": 60
+    },
+    {
+      "name": "accountsvc",
+      "ip": "127.0.0.1",
+      "port": 6985,
+      "poolSize": 10,
+      "refreshTime": 60
+    },
+    {
+      "name": "addresssvc",
+      "ip": "127.0.0.1",
+      "port": 6985,
+      "poolSize": 10,
+      "refreshTime": 60
+    }
+  ],
   "http": {
     "IP": "0.0.0.0",
     "port": 1234

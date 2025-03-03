@@ -17,11 +17,12 @@ func _() {
 	_ = x[kafka-6]
 	_ = x[ibmMq-7]
 	_ = x[rabbit-8]
+	_ = x[gRPC-9]
 }
 
-const _Types_name = "nonepostgresoraclemsSqlredismySqlkafkaibmMqrabbit"
+const _Types_name = "nonepostgresoraclemsSqlredismySqlkafkaibmMqrabbitgRPC"
 
-var _Types_index = [...]uint8{0, 4, 12, 18, 23, 28, 33, 38, 43, 49}
+var _Types_index = [...]uint8{0, 4, 12, 18, 23, 28, 33, 38, 43, 49, 53}
 
 func (i Types) String() string {
 	if i < 0 || i >= Types(len(_Types_index)-1) {

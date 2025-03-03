@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
@@ -47,7 +48,7 @@ func New(db loader.DB) (cPool.IConnection, *customModelError.XError) {
 	return ins, nil
 }
 
-func (c Config) Maker(request <-chan cPool.Request, response chan<- cPool.Response) {
+func (c Config) Maker(ctx context.Context, request <-chan cPool.Request, response chan<- cPool.Response) {
 	stop := false
 	defer func() {
 		if stop {
@@ -61,12 +62,11 @@ func (c Config) Maker(request <-chan cPool.Request, response chan<- cPool.Respon
 
 	for {
 		select {
-		case r := <-request:
+		case <-ctx.Done():
+			stop = true
+			return
 
-			if r.Stop {
-				stop = true
-				return
-			}
+		case r := <-request:
 			if r.Type != cPool.Types(1) {
 				response <- cPool.Response{
 					Total: 0,
@@ -75,7 +75,6 @@ func (c Config) Maker(request <-chan cPool.Request, response chan<- cPool.Respon
 				}
 				continue
 			}
-
 			switch {
 			case r.Count == 0:
 				response <- cPool.Response{
@@ -123,9 +122,11 @@ func (c Config) Maker(request <-chan cPool.Request, response chan<- cPool.Respon
 	}
 }
 
-func (c Config) Manager(cmd <-chan cPool.ManageRequest, conn chan<- *cPool.Connection) {
+func (c Config) Manager(ctx context.Context, cmd <-chan cPool.ManageRequest, conn chan<- *cPool.Connection) {
 	for {
 		select {
+		case <-ctx.Done():
+			return
 		case command := <-cmd:
 			switch command.Command {
 			case cPool.Commands(0):
@@ -185,10 +186,12 @@ func (c Config) Manager(cmd <-chan cPool.ManageRequest, conn chan<- *cPool.Conne
 
 }
 
-func (c Config) Refresh(s chan struct{}, e chan<- cPool.RefreshResponse) {
+func (c Config) Refresh(ctx context.Context, s chan struct{}, e chan<- cPool.RefreshResponse) {
 	for {
 		counter := 0
 		select {
+		case <-ctx.Done():
+			return
 		case <-s:
 			c.m.Lock()
 			for id, conn := range connections {
@@ -212,14 +215,13 @@ func (c Config) Refresh(s chan struct{}, e chan<- cPool.RefreshResponse) {
 	}
 }
 
-func (c Config) Release(request chan cPool.ReleaseRequest, e chan *customModelError.XError) {
+func (c Config) Release(ctx context.Context, request chan cPool.ReleaseRequest, e chan *customModelError.XError) {
 	for {
 		select {
+		case <-ctx.Done():
+			e <- customModelError.Success()
+			return
 		case r := <-request:
-			if r.Stop {
-				e <- customModelError.Success()
-				return
-			}
 			connection, ok := connections[r.ID.String()]
 			if !ok {
 				e <- cPool.DbCnnNotExist(nil)

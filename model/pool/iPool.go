@@ -1,15 +1,16 @@
 package pool
 
 import (
+	"context"
 	"github.com/google/uuid"
 	customModelError "github.com/mhthrh/GoNest/model/error"
 )
 
 type IConnection interface {
-	Maker(<-chan Request, chan<- Response)
-	Manager(<-chan ManageRequest, chan<- *Connection)
-	Refresh(chan struct{}, chan<- RefreshResponse)
-	Release(chan ReleaseRequest, chan *customModelError.XError)
+	Maker(context.Context, <-chan Request, chan<- Response)
+	Manager(context.Context, <-chan ManageRequest, chan<- *Connection)
+	Refresh(context.Context, chan struct{}, chan<- RefreshResponse)
+	Release(context.Context, chan ReleaseRequest, chan *customModelError.XError)
 	ReleaseAll(bool) *customModelError.XError
 }
 
@@ -25,7 +26,6 @@ type Connection struct {
 type Request struct {
 	Count uint
 	Type  Types
-	Stop  bool
 }
 type Response struct {
 	Total uint
@@ -35,7 +35,6 @@ type Response struct {
 type ReleaseRequest struct {
 	ID    uuid.UUID
 	Force bool
-	Stop  bool
 }
 type ManageRequest struct {
 	Command Commands

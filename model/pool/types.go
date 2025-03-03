@@ -15,4 +15,5 @@ const (
 	kafka
 	ibmMq
 	rabbit
+	gRPC
 )
