@@ -1,6 +1,7 @@
 package postgres_test
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
@@ -16,6 +17,7 @@ import (
 var (
 	f     l.IConfig
 	c, c1 *l.Config
+	ctx   context.Context
 )
 
 func init() {
@@ -23,6 +25,7 @@ func init() {
 	c, _ = f.Initialize()
 	c1, _ = f.Initialize()
 	c1.DataBase.Host = ""
+	ctx = context.Background()
 }
 func TestNew(t *testing.T) {
 
@@ -77,18 +80,15 @@ func TestMaker(t *testing.T) {
 	tests := []cPool.Request{{
 		Count: 10,
 		Type:  cPool.Types(0),
-		Stop:  false,
 	}, {
 		Count: 10,
 		Type:  cPool.Types(1),
-		Stop:  false,
 	}, {
 		Count: 0,
 		Type:  0,
-		Stop:  true,
 	},
 	}
-	go p.Maker(input.req, input.res)
+	go p.Maker(ctx, input.req, input.res)
 
 	for i, tst := range tests {
 		input.req <- tst
@@ -133,11 +133,10 @@ func TestManager(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	go p.Maker(req, res)
+	go p.Maker(ctx, req, res)
 	req <- cPool.Request{
 		Count: 10,
 		Type:  cPool.Types(1),
-		Stop:  false,
 	}
 	result := <-res
 	if result.Error != nil {
@@ -159,7 +158,7 @@ func TestManager(t *testing.T) {
 			ID:      uuid.UUID{},
 		},
 	}
-	go p.Manager(request, response)
+	go p.Manager(ctx, request, response)
 	for i, tst := range tests {
 		if i == 3 {
 			tst.ID = id
@@ -208,18 +207,17 @@ func TestRefresh(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	go p.Maker(request, response)
+	go p.Maker(ctx, request, response)
 	request <- cPool.Request{
 		Count: 10,
 		Type:  cPool.Types(1),
-		Stop:  false,
 	}
 	result := <-response
 	if result.Error != nil {
 		t.Error(fmt.Errorf("expected no error but got %v", result.Error))
 	}
 
-	go p.Refresh(req, res)
+	go p.Refresh(ctx, req, res)
 	req <- struct{}{}
 	r := <-res
 	if r.KilledCount != 0 {
@@ -241,18 +239,17 @@ func TestRelease(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	go p.Maker(request, response)
+	go p.Maker(ctx, request, response)
 	request <- cPool.Request{
 		Count: 10,
 		Type:  cPool.Types(1),
-		Stop:  false,
 	}
 	result := <-response
 	if result.Error != nil {
 		t.Error(fmt.Errorf("expected no error but got %v", result.Error))
 	}
 
-	go p.Manager(manageRequest, manageResponse)
+	go p.Manager(ctx, manageRequest, manageResponse)
 	manageRequest <- cPool.ManageRequest{
 		Command: cPool.Commands(1),
 		ID:      uuid.UUID{},
@@ -262,21 +259,18 @@ func TestRelease(t *testing.T) {
 	if mRes.Err != nil {
 		t.Error(fmt.Errorf("expected no error but got %v", mRes.Err))
 	}
-	go p.Release(req, res)
+	go p.Release(ctx, req, res)
 
 	tests := []cPool.ReleaseRequest{
 		{
 			ID:    uuid.New(),
 			Force: false,
-			Stop:  false,
 		}, {
 			ID:    mRes.Id,
 			Force: false,
-			Stop:  false,
 		}, {
 			ID:    mRes.Id,
 			Force: false,
-			Stop:  true,
 		},
 	}
 
@@ -307,11 +301,10 @@ func TestReleaseAll(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	go p.Maker(request, response)
+	go p.Maker(ctx, request, response)
 	request <- cPool.Request{
 		Count: 10,
 		Type:  cPool.Types(1),
-		Stop:  false,
 	}
 	result := <-response
 	if result.Error != nil {

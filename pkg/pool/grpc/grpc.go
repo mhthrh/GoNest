@@ -10,6 +10,11 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"sync"
+	"time"
+)
+
+const (
+	waitForFreeCnn = time.Millisecond * 100
 )
 
 var (
@@ -70,21 +75,57 @@ func (g Grpc) Maker(ctx context.Context, requests <-chan cPool.Request, response
 					add(v.Name, c)
 				}
 			}
-			//responses <- cPool.Response{
-			//	Total: uint(len(connections)),
-			//	InUse: uint(len(lo.PickBy(connections, func(key string, value cPool.Connection) bool {
-			//		return value.InUse == true
-			//	}))),
-			//	Error: nil,
-			//}
+			responses <- cPool.Response{
+				Total: uint(len(connections)),
+				InUse: 0,
+				Error: nil,
+			}
 			continue
 		}
 	}
 }
 
 func (g Grpc) Manager(ctx context.Context, requests <-chan cPool.ManageRequest, connections chan<- *cPool.Connection) {
-	//TODO implement me
-	panic("implement me")
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case r := <-requests:
+			switch r.Command {
+			case cPool.Commands(0):
+				connections <- &cPool.Connection{
+					Id:    uuid.UUID{},
+					Cnn:   nil,
+					InUse: false,
+					Err:   cPool.CommandNotExist(nil),
+				}
+			case cPool.Commands(1):
+				g.m.Lock()
+				stop := time.After(waitForFreeCnn)
+				for {
+					select {
+					case <-stop:
+						g.m.Unlock()
+						connections <- &cPool.Connection{
+							Id:    uuid.UUID{},
+							Cnn:   nil,
+							InUse: false,
+							Err:   cPool.FreeConnectionNotExist(nil),
+						}
+					default:
+						//for _, cn := range connections {
+						//	if !cn.InUse {
+						//		cn.InUse = true
+						//		connections <- &cn
+						//		c.m.Unlock()
+						//		goto indicator
+						//	}
+						//}
+					}
+				}
+			}
+		}
+	}
 }
 
 func (g Grpc) Refresh(ctx context.Context, c chan struct{}, responses chan<- cPool.RefreshResponse) {

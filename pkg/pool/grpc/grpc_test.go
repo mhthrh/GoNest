@@ -31,14 +31,21 @@ func TestGrpc_Maker(t *testing.T) {
 	go gRPC.Maker(ctx, req, res)
 	req <- pool.Request{
 		Count: 10,
-		Type:  pool.Types(9),
+		Type:  pool.Types(4),
 	}
 
-	select {
-	case r := <-res:
-		if r.Error != nil {
-			t.Error(r.Error)
-		}
+	r := <-res
+	if r.Error == nil {
+		t.Errorf("error required but its nil")
+	}
+
+	req <- pool.Request{
+		Count: 10,
+		Type:  pool.Types(9),
+	}
+	r = <-res
+	if r.Error != nil {
+		t.Errorf("not passed, error is %v", r.Error)
 	}
 	ctx.Done()
 }
